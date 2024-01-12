@@ -1,4 +1,6 @@
 package chess;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A chessboard that can hold and rearrange chess pieces.
@@ -7,9 +9,15 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
-
+    private ChessPosition[][] squares;
     public ChessBoard() {
-        
+        this.squares = new ChessPosition[8][8];
+
+        for(int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++){
+                var position = new ChessPosition(i+1, j+1);
+                squares[i][j] = position;
+        }
     }
 
     /**
