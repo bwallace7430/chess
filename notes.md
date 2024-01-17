@@ -18,3 +18,19 @@ library. var keyword tells the computer to figure out what type the variable is 
 what you set the variable equal to. new String initializes automatically to NULL
 - **Arrays**: brackets go after the type. (ie String[] myString = new String[10]).
 You can declare an empty array to allow it to grow as you go, like in the above.
+## Week 2
+### Java Conventions
+Functions are lowercase and typed without spaces or dashes likeThis. Classes are one word and
+capitalized.
+### Package
+Everything in Java is in a package. If you don't specify the package (by using the format 
+package thisPackage) then it won't do anything.
+### Object Class
+All classes are also object classes. This is the parent class. toString() returns a fancy memory object.
+You will want to override this. equals() returns a boolean. hashCode() gives you a unique int for each object.
+wait() and notify() do NOT overrun these. clone() gives you a duplicate object. It's kinda useless. To 
+override a function, write @Override above it
+### Record
+Overrides the object equal() method and getters. Records are immutable, but are essentially just like classes.
+- Syntax:
+record CowRecord(String name){}
