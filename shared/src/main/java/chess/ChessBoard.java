@@ -9,15 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPosition[][] squares;
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
-        this.squares = new ChessPosition[8][8];
-
-        for(int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++){
-                var position = new ChessPosition(i+1, j+1);
-                squares[i][j] = position;
-        }
     }
 
     /**
@@ -27,7 +20,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        squares[position.getRow()][position.getColumn()] = piece;
     }
 
     /**
@@ -38,7 +31,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return squares[position.getRow()][position.getColumn()];
     }
 
     /**

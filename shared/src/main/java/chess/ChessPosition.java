@@ -9,19 +9,11 @@ package chess;
 public class ChessPosition {
     private final int rowNum;
     private final int colNum;
-    private boolean takenStatus;
 
     public ChessPosition(int row, int col) {
         this.rowNum = row;
         this.colNum = col;
-        this.takenStatus = false;
     }
-    public ChessPosition(int row, int col, boolean taken) {
-        this.rowNum = row;
-        this.colNum = col;
-        this.takenStatus = taken;
-    }
-
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
@@ -36,13 +28,5 @@ public class ChessPosition {
      */
     public int getColumn() {
         return this.colNum;
-    }
-
-    public boolean getStatus() {
-        return this.takenStatus;
-    }
-
-    public void updateStatus(boolean taken) {
-        this.takenStatus = taken;
     }
 }
