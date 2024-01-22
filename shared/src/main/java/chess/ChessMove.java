@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents moving a chess piece on a chessboard
@@ -22,6 +23,7 @@ public class ChessMove {
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
+        this.promotionPiece = null;
     }
     public ChessMove(ChessPosition startPosition) {
         this.startPosition = startPosition;
@@ -50,81 +52,30 @@ public class ChessMove {
     public ChessPiece.PieceType getPromotionPiece() {
         throw new RuntimeException("Not implemented");
     }
+    @Override
+    public String toString(){
+        //String myString = "Starting Position: [";
+        //myString += Integer.toString(this.startPosition.getRow());
+        //myString += ", ";
+        //myString += Integer.toString((this.startPosition.getColumn()));
+        String myString = "[";
+        myString += Integer.toString(this.endPosition.getRow());
+        myString += ", ";
+        myString += Integer.toString((this.endPosition.getColumn()));
+        myString += "]";
+        return myString;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessMove chessMove = (ChessMove) o;
+        return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
+    }
 
-    public ChessPosition upRightDiagonal(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row += 1;
-        col += 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition upLeftDiagonal(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row += 1;
-        col -= 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition downLeftDiagonal(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row -= 1;
-        col -= 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition downRightDiagonal(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row -= 1;
-        col += 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition moveUp(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row += 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition moveDown(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        row -= 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition moveLeft(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        col -= 1;
-        return new ChessPosition(row, col);
-    }
-    public ChessPosition moveRight(ChessPosition startPosition) {
-        var row = startPosition.getRow();
-        var col = startPosition.getColumn();
-        col += 1;
-        return new ChessPosition(row, col);
-    }
-    public Collection<ChessMove> fullDiagonal(ChessPosition startPosition) {
-        var tempPosition = startPosition;
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        while (tempPosition.getRow() > 1 && tempPosition.getColumn() > 1) {
-            tempPosition = downLeftDiagonal(tempPosition);
-            possibleMoves.add(new ChessMove(startPosition, tempPosition));
-        }
-        tempPosition = startPosition;
-        while (tempPosition.getRow() < 8 && tempPosition.getColumn() < 8) {
-            tempPosition = upRightDiagonal(tempPosition);
-            possibleMoves.add(new ChessMove(startPosition, tempPosition));
-        }
-        tempPosition = startPosition;
-        while (tempPosition.getRow() < 8 && tempPosition.getColumn() > 1) {
-            tempPosition = upLeftDiagonal(tempPosition);
-            possibleMoves.add(new ChessMove(startPosition, tempPosition));
-        }
-        tempPosition = startPosition;
-        while (tempPosition.getRow() > 1 && tempPosition.getColumn() < 8) {
-            tempPosition = downRightDiagonal(tempPosition);
-            possibleMoves.add(new ChessMove(startPosition, tempPosition));
-        }
-        return possibleMoves;
+    @Override
+    public int hashCode() {
+        return Objects.hash(startPosition, endPosition, promotionPiece);
     }
 }
+

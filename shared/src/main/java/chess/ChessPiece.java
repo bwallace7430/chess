@@ -1,7 +1,8 @@
 package chess;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.junit.jupiter.api.Assertions;
+
+import java.util.*;
 
 /**
  * Represents a single chess piece
@@ -51,10 +52,32 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        var move = new ChessMove(myPosition);
         if (this.pieceType == PieceType.BISHOP){
-            return move.fullDiagonal(myPosition);
+            return new BishopMovements(this);
+            var x = new HashSet<ChessMove>(List.of(new ChessMove(new ChessPosition(1, 1), new ChessPosition(8, 8), null)));
+            var y = new HashSet<ChessMove>(List.of(new ChessMove(new ChessPosition(1, 1), new ChessPosition(8, 8), null)));
+
+            Assertions.assertEquals(x, y, "something bad is going on");
+
+            return ChessMove.fullDiagonal(myPosition);
+        }
+        if (this.pieceType == PieceType.ROOK){
+            var allMoves = ChessMove.fullVertical(myPosition);
+            allMoves.addAll(ChessMove.fullHorizontal((myPosition)));
+            return allMoves;
         }
         return null;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && pieceType == that.pieceType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, pieceType);
     }
 }
