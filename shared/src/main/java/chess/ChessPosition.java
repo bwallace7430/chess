@@ -32,6 +32,10 @@ public class ChessPosition {
         return this.colNum;
     }
 
+    public boolean isValid(){
+        return this.rowNum <= 8 && this.colNum <= 8 && this.rowNum >= 1 && this.colNum >= 1;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

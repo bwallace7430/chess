@@ -52,19 +52,25 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        if (this.pieceType == PieceType.BISHOP){
-            return new BishopMovements(this);
-            var x = new HashSet<ChessMove>(List.of(new ChessMove(new ChessPosition(1, 1), new ChessPosition(8, 8), null)));
-            var y = new HashSet<ChessMove>(List.of(new ChessMove(new ChessPosition(1, 1), new ChessPosition(8, 8), null)));
-
-            Assertions.assertEquals(x, y, "something bad is going on");
-
-            return ChessMove.fullDiagonal(myPosition);
-        }
-        if (this.pieceType == PieceType.ROOK){
-            var allMoves = ChessMove.fullVertical(myPosition);
-            allMoves.addAll(ChessMove.fullHorizontal((myPosition)));
-            return allMoves;
+        switch (this.pieceType) {
+            case ROOK -> {
+                return new RookMoves(board, myPosition).getMovesForPiece();
+            }
+            case BISHOP -> {
+                return new BishopMoves(board, myPosition).getMovesForPiece();
+            }
+            case QUEEN -> {
+                return new QueenMoves(board, myPosition).getMovesForPiece();
+            }
+//            case KING -> {
+//                return new KingMoves(board, myPosition).getMovesForPiece();
+//            }
+//            case PAWN -> {
+//                return new PawnMoves(board, myPosition).getMovesForPiece();
+//            }
+            case KNIGHT -> {
+                return new KnightMoves(board, myPosition).getMovesForPiece();
+            }
         }
         return null;
     }
