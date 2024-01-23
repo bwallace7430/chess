@@ -50,7 +50,7 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+        return promotionPiece;
     }
     @Override
     public String toString(){
@@ -62,7 +62,13 @@ public class ChessMove {
         myString += Integer.toString(this.endPosition.getRow());
         myString += ", ";
         myString += Integer.toString((this.endPosition.getColumn()));
-        myString += "]; ";
+        myString += "], ";
+        switch (promotionPiece){
+            case ROOK -> myString += "Rook;";
+            case QUEEN -> myString += "Queen";
+            case BISHOP -> myString += "Bishop";
+            case KNIGHT -> myString += "Knight";
+        }
         return myString;
     }
     @Override

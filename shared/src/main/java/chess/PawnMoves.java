@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 public class PawnMoves extends Movements {
@@ -62,9 +63,7 @@ public class PawnMoves extends Movements {
         }
         return diagonalSquares;
     }
-
-    @Override
-    public Collection<ChessMove> getMovesForPiece() {
+    private Collection<ChessMove> allPawnMoves(){
         ArrayList<ChessMove> possibleMoves = new ArrayList<>();
         // consider breaking down pieces of complex conditions into variables to make it easier to read
 
@@ -100,6 +99,25 @@ public class PawnMoves extends Movements {
             }
         }
         return possibleMoves;
+    }
+
+    @Override
+    public Collection<ChessMove> getMovesForPiece() {
+        var movesWithPromos = new ArrayList<ChessMove>();
+        for(var move : allPawnMoves()){
+            var endPos = move.getEndPosition();
+            var startPos = move.getStartPosition();
+            if((direction.equals("up") && endPos.getRow() == 8) || direction.equals("down") && endPos.getRow() == 1){
+                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.BISHOP));
+                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.QUEEN));
+                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.KNIGHT));
+                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.ROOK));
+            }
+            else{
+                movesWithPromos.add(move);
+            }
+        }
+        return new HashSet<ChessMove>(movesWithPromos);
     }
 }
 
