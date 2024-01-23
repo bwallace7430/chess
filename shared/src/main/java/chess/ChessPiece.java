@@ -65,9 +65,9 @@ public class ChessPiece {
             case KING -> {
                 return new KingMoves(board, myPosition).getMovesForPiece();
             }
-//            case PAWN -> {
-//                return new PawnMoves(board, myPosition).getMovesForPiece();
-//            }
+            case PAWN -> {
+                return new PawnMoves(board, myPosition).getMovesForPiece();
+           }
             case KNIGHT -> {
                 return new KnightMoves(board, myPosition).getMovesForPiece();
             }
