@@ -41,6 +41,9 @@ public class ChessPosition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPosition that = (ChessPosition) o;
+        if (rowNum == that.rowNum && colNum == that.colNum){
+            System.out.println("This is true");
+        }
         return rowNum == that.rowNum && colNum == that.colNum;
     }
 

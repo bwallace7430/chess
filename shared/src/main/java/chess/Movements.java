@@ -22,36 +22,45 @@ public abstract class Movements {
     }
 
     protected ChessPosition moveOneSquare(String direction, ChessPosition position) {
-        if (direction.equals("up")) {
-            var newRow = position.getRow() + 1;
-            return new ChessPosition(newRow, position.getColumn());
-        } else if (direction.equals("down")) {
-            var newRow = position.getRow() - 1;
-            return new ChessPosition(newRow, position.getColumn());
-        } else if (direction.equals("left")) {
-            var newColumn = position.getColumn() - 1;
-            return new ChessPosition(position.getRow(), newColumn);
-        } else if (direction.equals("right")) {
-            var newColumn = position.getColumn() + 1;
-            return new ChessPosition(position.getRow(), newColumn);
-        } else if (direction.equals("upper right")) {
-            var newColumn = position.getColumn() + 1;
-            var newRow = position.getRow() + 1;
-            return new ChessPosition(newRow, newColumn);
-        } else if (direction.equals("upper left")) {
-            var newColumn = position.getColumn() - 1;
-            var newRow = position.getRow() + 1;
-            return new ChessPosition(newRow, newColumn);
-        } else if (direction.equals("lower left")) {
-            var newColumn = position.getColumn() - 1;
-            var newRow = position.getRow() - 1;
-            return new ChessPosition(newRow, newColumn);
-        } else if (direction.equals("lower right")) {
-            var newColumn = position.getColumn() + 1;
-            var newRow = position.getRow() - 1;
-            return new ChessPosition(newRow, newColumn);
+        switch (direction) {
+            case "up" -> {
+                var newRow = position.getRow() + 1;
+                return new ChessPosition(newRow, position.getColumn());
+            }
+            case "down" -> {
+                var newRow = position.getRow() - 1;
+                return new ChessPosition(newRow, position.getColumn());
+            }
+            case "left" -> {
+                var newColumn = position.getColumn() - 1;
+                return new ChessPosition(position.getRow(), newColumn);
+            }
+            case "right" -> {
+                var newColumn = position.getColumn() + 1;
+                return new ChessPosition(position.getRow(), newColumn);
+            }
+            case "upper right" -> {
+                var newColumn = position.getColumn() + 1;
+                var newRow = position.getRow() + 1;
+                return new ChessPosition(newRow, newColumn);
+            }
+            case "upper left" -> {
+                var newColumn = position.getColumn() - 1;
+                var newRow = position.getRow() + 1;
+                return new ChessPosition(newRow, newColumn);
+            }
+            case "lower left" -> {
+                var newColumn = position.getColumn() - 1;
+                var newRow = position.getRow() - 1;
+                return new ChessPosition(newRow, newColumn);
+            }
+            case "lower right" -> {
+                var newColumn = position.getColumn() + 1;
+                var newRow = position.getRow() - 1;
+                return new ChessPosition(newRow, newColumn);
+            }
         }
-        return position;
+        throw new RuntimeException("Invalid move direction!");
     }
 
     protected Collection<ChessMove> moveHorizontal() {
@@ -60,11 +69,11 @@ public abstract class Movements {
         while (currPosition.getColumn() != 8) {
             var newPosition = moveOneSquare("right", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -75,11 +84,11 @@ public abstract class Movements {
         while (currPosition.getColumn() != 1) {
             var newPosition = moveOneSquare("left", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -95,11 +104,11 @@ public abstract class Movements {
         while (currPosition.getRow() != 8) {
             var newPosition = moveOneSquare("up", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -110,11 +119,11 @@ public abstract class Movements {
         while (currPosition.getRow() != 1) {
             var newPosition = moveOneSquare("down", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -130,11 +139,11 @@ public abstract class Movements {
         while (currPosition.getColumn() != 8 && currPosition.getRow() != 8) {
             var newPosition = moveOneSquare("upper right", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -142,14 +151,14 @@ public abstract class Movements {
             }
         }
         currPosition = this.position;
-        while (currPosition.getColumn() != 8 && currPosition.getRow() != 1) {
+        while (currPosition.getColumn() > 1 && currPosition.getRow() < 8) {
             var newPosition = moveOneSquare("upper left", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -160,11 +169,11 @@ public abstract class Movements {
         while (currPosition.getColumn() != 1 && currPosition.getRow() != 1) {
             var newPosition = moveOneSquare("lower left", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {
@@ -175,11 +184,11 @@ public abstract class Movements {
         while (currPosition.getColumn() != 8 && currPosition.getRow() != 1) {
             var newPosition = moveOneSquare("lower right", currPosition);
             if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 currPosition = newPosition;
             } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(currPosition, newPosition);
+                var move = new ChessMove(this.position, newPosition);
                 possibleMoves.add(move);
                 break;
             } else {

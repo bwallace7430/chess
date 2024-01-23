@@ -62,9 +62,9 @@ public class ChessPiece {
             case QUEEN -> {
                 return new QueenMoves(board, myPosition).getMovesForPiece();
             }
-//            case KING -> {
-//                return new KingMoves(board, myPosition).getMovesForPiece();
-//            }
+            case KING -> {
+                return new KingMoves(board, myPosition).getMovesForPiece();
+            }
 //            case PAWN -> {
 //                return new PawnMoves(board, myPosition).getMovesForPiece();
 //            }

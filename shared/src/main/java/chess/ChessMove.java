@@ -54,15 +54,15 @@ public class ChessMove {
     }
     @Override
     public String toString(){
-        //String myString = "Starting Position: [";
-        //myString += Integer.toString(this.startPosition.getRow());
-        //myString += ", ";
-        //myString += Integer.toString((this.startPosition.getColumn()));
         String myString = "[";
+        myString += Integer.toString(this.startPosition.getRow());
+        myString += ", ";
+        myString += Integer.toString((this.startPosition.getColumn()));
+        myString += "], [";
         myString += Integer.toString(this.endPosition.getRow());
         myString += ", ";
         myString += Integer.toString((this.endPosition.getColumn()));
-        myString += "]";
+        myString += "]; ";
         return myString;
     }
     @Override
