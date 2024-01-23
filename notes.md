@@ -56,6 +56,20 @@ that would be implemented by extending that abstract class.
 Overload your constructor with a constructor that takes an object and assigns each property to the values held by that
 object. Shallow copy = the data for both objects is shared even though there is a different shell, as it were. Deep 
 copy. Look into it, deep copies are IMPORTANT.
-
-
+## Week 3
+### JDK Collections
+There's lots of inheritance and classes with these. Important: List, Set, Queue, Map, Iterator
+#### Aggregation
+You are made up of different organs. A class is made up of member variables. This is an alternative to 
+extension/inheritance.
+#### MultiSelect
+A keyboard shortcut that creates multiple cursors. Something with Alt? Look it up.
+#### Comparables
+Returns -1, 0, or 1 depending on which item is greater.
+### Exceptions
+When an exception is thrown, the program skips the entire call stack up to whatever function catches the exception.
+All the intermittent code is skipped, and the code continues from where it is caught. This is for when bad things 
+happen. Exceptionally bad things. If an exception could be thrown by a function, you have to say that in your function.
+In try{} finally{}, finally block will always run, even if there's an exception thrown and not caught. Try with 
+resources will take care of the resources that you would otherwise need a finally block.
 
