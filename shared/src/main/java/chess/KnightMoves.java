@@ -4,128 +4,55 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KnightMoves extends Movements {
+    private final ChessBoard board;
+    private final ChessPosition position;
+    private final ChessPiece piece;
     public KnightMoves(ChessBoard board, ChessPosition position) {
         super(board, position);
+        this.board = board;
+        this.position = position;
+        piece = board.getPiece(this.position);
     }
 
-    private Collection<ChessMove> lMoves(){
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        if (upUpRight().isValid()) {
-            if (board.getPiece(upUpRight()) != null) {
-                if (!onTeam(this.board.getPiece(upUpRight()))) {
-                    var newMove = new ChessMove(position, upUpRight());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, upUpRight());
-                possibleMoves.add(newMove);
-            }
+    private boolean canBeTaken(ChessPosition position){
+        return position != this.position && (position.isEmpty(board) || board.getPiece(position).isOpponent(piece));
+    }
+
+    @Override
+    public Collection<ChessMove> getPieceMoves() {
+        var possibleMoves = new ArrayList<ChessMove>();
+        String[] movesString = {"up", "up", "right"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (upUpLeft().isValid()){
-            if (board.getPiece(upUpLeft()) != null) {
-                if (!onTeam(this.board.getPiece(upUpLeft()))) {
-                    var newMove = new ChessMove(position, upUpLeft());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, upUpLeft());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"up", "up", "left"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (leftLeftDown().isValid()){
-            if (board.getPiece(leftLeftDown()) != null) {
-                if (!onTeam(this.board.getPiece(leftLeftDown()))) {
-                    var newMove = new ChessMove(position, leftLeftDown());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, leftLeftDown());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"left", "left", "up"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (leftLeftUp().isValid()){
-            if (board.getPiece(leftLeftUp()) != null) {
-                if (!onTeam(this.board.getPiece(leftLeftUp()))) {
-                    var newMove = new ChessMove(position, leftLeftUp());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, leftLeftUp());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"left", "left", "down"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (downDownLeft().isValid()){
-            if (board.getPiece(downDownLeft()) != null) {
-                if (!onTeam(this.board.getPiece(downDownLeft()))) {
-                    var newMove = new ChessMove(position, downDownLeft());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, downDownLeft());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"down", "down", "left"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (downDownRight().isValid()){
-            if (board.getPiece(downDownRight()) != null) {
-                if (!onTeam(this.board.getPiece(downDownRight()))) {
-                    var newMove = new ChessMove(position, downDownRight());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, downDownRight());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"down", "down", "right"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (rightRightUp().isValid()){
-            if (board.getPiece(rightRightUp()) != null) {
-                if (!onTeam(this.board.getPiece(rightRightUp()))) {
-                    var newMove = new ChessMove(position, rightRightUp());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, rightRightUp());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"right", "right", "down"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
-        if (rightRightDown().isValid()){
-            if (board.getPiece(rightRightDown()) != null) {
-                if (!onTeam(this.board.getPiece(rightRightDown()))) {
-                    var newMove = new ChessMove(position, rightRightDown());
-                    possibleMoves.add(newMove);
-                }
-            } else{
-                var newMove = new ChessMove(position, rightRightDown());
-                possibleMoves.add(newMove);
-            }
+        movesString = new String[]{"right", "right", "up"};
+        if(canBeTaken(anyMove(movesString))){
+            possibleMoves.add(new ChessMove(position, anyMove(movesString)));
         }
         return possibleMoves;
-    }
-    private ChessPosition upUpRight(){
-        return moveOneSquare("right", moveOneSquare("up", moveOneSquare("up", position)));
-    }
-    private ChessPosition upUpLeft(){
-        return moveOneSquare("left", moveOneSquare("up", moveOneSquare("up", position)));
-    }
-    private ChessPosition leftLeftUp(){
-        return moveOneSquare("up", moveOneSquare("left", moveOneSquare("left", position)));
-    }
-    private ChessPosition leftLeftDown(){
-        return moveOneSquare("down", moveOneSquare("left", moveOneSquare("left", position)));
-    }
-    private ChessPosition downDownLeft(){
-        return moveOneSquare("left", moveOneSquare("down", moveOneSquare("down", position)));
-    }
-    private ChessPosition downDownRight(){
-        return moveOneSquare("right", moveOneSquare("down", moveOneSquare("down", position)));
-    }
-    private ChessPosition rightRightDown(){
-        return moveOneSquare("down", moveOneSquare("right", moveOneSquare("right", position)));
-    }
-    private ChessPosition rightRightUp(){
-        return moveOneSquare("up", moveOneSquare("right", moveOneSquare("right", position)));
-    }
-    @Override
-    public Collection<ChessMove> getMovesForPiece() {
-        return lMoves();
     }
 }

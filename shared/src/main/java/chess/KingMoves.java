@@ -4,56 +4,47 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class KingMoves extends Movements {
+    private final ChessBoard board;
+    private final ChessPosition position;
+    private final ChessPiece piece;
     public KingMoves(ChessBoard board, ChessPosition position) {
         super(board, position);
+        this.board = board;
+        this.position = position;
+        piece = board.getPiece(this.position);
     }
-    private ChessMove oneSquareMove(String direction) {
 
-        /*
-        if squareisBlocked (piece is there and on our team)
-            return null
-        else
-            return new ChessMove(...)
-         */
-        if (moveOneSquare(direction, position).isValid()) {
-            if (board.getPiece(moveOneSquare(direction, position)) != null) {
-                if (!onTeam(this.board.getPiece(moveOneSquare(direction, position)))) {
-                    var newMove = new ChessMove(position, moveOneSquare(direction, position));
-                    return newMove;
-                }
-                return null;
-            }
-            var newMove = new ChessMove(position, moveOneSquare(direction, position));
-            return newMove;
-        }
-        return null;
+    private boolean canBeTaken(String direction, ChessPosition position){
+        ChessPosition possiblePosition = null;
+        possiblePosition = moveOneSquare(direction, position);
+        return possiblePosition != position && (possiblePosition.isEmpty(board) || board.getPiece(possiblePosition).isOpponent(piece));
     }
     @Override
-    public Collection<ChessMove> getMovesForPiece() {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        if (!(oneSquareMove("up") == null)){
-            possibleMoves.add(oneSquareMove("up"));
+    public Collection<ChessMove> getPieceMoves() {
+        var possibleMoves = new ArrayList<ChessMove>();
+        if(canBeTaken("up", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("up", position)));
         }
-        if (!(oneSquareMove("down") == null)){
-            possibleMoves.add(oneSquareMove("down"));
+        if(canBeTaken("down", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("down", position)));
         }
-        if (!(oneSquareMove("left") == null)){
-            possibleMoves.add(oneSquareMove("left"));
+        if(canBeTaken("left", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("left", position)));
         }
-        if (!(oneSquareMove("right") == null)){
-            possibleMoves.add(oneSquareMove("right"));
+        if(canBeTaken("right", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("right", position)));
         }
-        if (!(oneSquareMove("upper left") == null)){
-            possibleMoves.add(oneSquareMove("upper left"));
+        if(canBeTaken("upper right", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("upper right", position)));
         }
-        if (!(oneSquareMove("upper right") == null)){
-            possibleMoves.add(oneSquareMove("upper right"));
+        if(canBeTaken("upper left", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("upper left", position)));
         }
-        if (!(oneSquareMove("lower left") == null)){
-            possibleMoves.add(oneSquareMove("lower left"));
+        if(canBeTaken("lower right", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("lower right", position)));
         }
-        if (!(oneSquareMove("lower right") == null)){
-            possibleMoves.add(oneSquareMove("lower right"));
+        if(canBeTaken("lower left", position)){
+            possibleMoves.add(new ChessMove(position, moveOneSquare("lower left", position)));
         }
         return possibleMoves;
     }

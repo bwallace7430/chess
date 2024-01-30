@@ -2,12 +2,11 @@ package chess;
 
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public abstract class Movements {
-    protected final ChessPiece piece;
-    protected final ChessBoard board;
-    protected final ChessPosition position;
+    private final ChessPiece piece;
+    private final ChessBoard board;
+    private final ChessPosition position;
 
     public Movements(ChessBoard board, ChessPosition position) {
         this.board = board;
@@ -15,186 +14,98 @@ public abstract class Movements {
         this.piece = this.board.getPiece(this.position);
     }
 
-    public abstract Collection<ChessMove> getMovesForPiece();
-
-    protected boolean onTeam(ChessPiece piece2) {
-        return this.piece.getTeamColor() == piece2.getTeamColor();
-    }
-
-    protected ChessPosition moveOneSquare(String direction, ChessPosition position) {
-        switch (direction) {
+    protected ChessPosition moveOneSquare(String direction, ChessPosition position){
+        var startRow = position.getRow();
+        var startCol = position.getColumn();
+        ChessPosition newPosition = null;
+        switch(direction){
             case "up" -> {
-                var newRow = position.getRow() + 1;
-                return new ChessPosition(newRow, position.getColumn());
+                newPosition = new ChessPosition(startRow + 1, startCol);
             }
             case "down" -> {
-                var newRow = position.getRow() - 1;
-                return new ChessPosition(newRow, position.getColumn());
-            }
-            case "left" -> {
-                var newColumn = position.getColumn() - 1;
-                return new ChessPosition(position.getRow(), newColumn);
+                newPosition = new ChessPosition(startRow - 1, startCol);
             }
             case "right" -> {
-                var newColumn = position.getColumn() + 1;
-                return new ChessPosition(position.getRow(), newColumn);
+                newPosition = new ChessPosition(startRow, startCol+1);
+            }
+            case "left" -> {
+                newPosition = new ChessPosition(startRow, startCol-1);
             }
             case "upper right" -> {
-                var newColumn = position.getColumn() + 1;
-                var newRow = position.getRow() + 1;
-                return new ChessPosition(newRow, newColumn);
+                newPosition = new ChessPosition(startRow + 1, startCol +1);
             }
             case "upper left" -> {
-                var newColumn = position.getColumn() - 1;
-                var newRow = position.getRow() + 1;
-                return new ChessPosition(newRow, newColumn);
-            }
-            case "lower left" -> {
-                var newColumn = position.getColumn() - 1;
-                var newRow = position.getRow() - 1;
-                return new ChessPosition(newRow, newColumn);
+                newPosition = new ChessPosition(startRow +1, startCol-1);
             }
             case "lower right" -> {
-                var newColumn = position.getColumn() + 1;
-                var newRow = position.getRow() - 1;
-                return new ChessPosition(newRow, newColumn);
+                newPosition = new ChessPosition(startRow - 1, startCol+1);
+            }
+            case "lower left" -> {
+                newPosition = new ChessPosition(startRow - 1, startCol -1);
             }
         }
-        throw new RuntimeException("Invalid move direction!");
+        if(newPosition.isValid()){
+            return newPosition;
+        }
+        return position;
     }
 
-    protected Collection<ChessMove> moveHorizontal() {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        var currPosition = this.position;
-        while (currPosition.getColumn() != 8) {
-            var newPosition = moveOneSquare("right", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
+    protected ChessPosition anyMove(String[] directions){
+        var tempPosition = position;
+        ChessPosition currPosition = null;
+        for (var direction : directions){
+            currPosition = tempPosition;
+            tempPosition = moveOneSquare(direction, currPosition);
+            if(tempPosition == currPosition){
+                return position;
             }
         }
-        currPosition = this.position;
-        while (currPosition.getColumn() != 1) {
-            var newPosition = moveOneSquare("left", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
+        return tempPosition;
+    }
+
+    protected Collection<ChessMove> fullLengthMove(String direction){
+        var possibleMoves = new ArrayList<ChessMove>();
+        var nextPosition = moveOneSquare(direction, position);
+        var currPosition = position;
+        while(nextPosition != currPosition){
+            if(nextPosition.isEmpty(this.board)){
+                possibleMoves.add(new ChessMove(position, nextPosition));
+                currPosition = nextPosition;
+                nextPosition = moveOneSquare(direction, currPosition);
+            }
+            else if(piece.isOpponent(board.getPiece(nextPosition))){
+                possibleMoves.add(new ChessMove(position, nextPosition));
+                return possibleMoves;
+            }
+            else{
+                return possibleMoves;
             }
         }
         return possibleMoves;
     }
 
-    protected Collection<ChessMove> moveVertical() {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        var currPosition = this.position;
-        while (currPosition.getRow() != 8) {
-            var newPosition = moveOneSquare("up", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
-        currPosition = this.position;
-        while (currPosition.getRow() != 1) {
-            var newPosition = moveOneSquare("down", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
+    protected Collection<ChessMove> fullDiagonal(){
+        var possibleMoves = new ArrayList<ChessMove>();
+        possibleMoves.addAll(fullLengthMove("upper right"));
+        possibleMoves.addAll(fullLengthMove("upper left"));
+        possibleMoves.addAll(fullLengthMove("lower left"));
+        possibleMoves.addAll(fullLengthMove("lower right"));
         return possibleMoves;
     }
 
-    protected Collection<ChessMove> moveDiagonal() {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        var currPosition = this.position;
-        while (currPosition.getColumn() != 8 && currPosition.getRow() != 8) {
-            var newPosition = moveOneSquare("upper right", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
-        currPosition = this.position;
-        while (currPosition.getColumn() > 1 && currPosition.getRow() < 8) {
-            var newPosition = moveOneSquare("upper left", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
-        currPosition = this.position;
-        while (currPosition.getColumn() != 1 && currPosition.getRow() != 1) {
-            var newPosition = moveOneSquare("lower left", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
-        currPosition = this.position;
-        while (currPosition.getColumn() != 8 && currPosition.getRow() != 1) {
-            var newPosition = moveOneSquare("lower right", currPosition);
-            if (this.board.getPiece(newPosition) == null) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                currPosition = newPosition;
-            } else if (!onTeam(this.board.getPiece(newPosition))) {
-                var move = new ChessMove(this.position, newPosition);
-                possibleMoves.add(move);
-                break;
-            } else {
-                break;
-            }
-        }
+    protected Collection<ChessMove> fullHorizontal(){
+        var possibleMoves = new ArrayList<ChessMove>();
+        possibleMoves.addAll(fullLengthMove("left"));
+        possibleMoves.addAll(fullLengthMove("right"));
         return possibleMoves;
     }
+
+    protected Collection<ChessMove> fullVertical(){
+        var possibleMoves = new ArrayList<ChessMove>();
+        possibleMoves.addAll(fullLengthMove("up"));
+        possibleMoves.addAll(fullLengthMove("down"));
+        return possibleMoves;
+    }
+
+    public abstract Collection<ChessMove> getPieceMoves();
 }

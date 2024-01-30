@@ -8,7 +8,5 @@ public class BishopMoves extends Movements {
     }
 
     @Override
-    public Collection<ChessMove> getMovesForPiece() {
-        return moveDiagonal();
-    }
+    public Collection<ChessMove> getPieceMoves() {return fullDiagonal();}
 }

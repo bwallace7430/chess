@@ -3,121 +3,145 @@ package chess;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Objects;
 
 public class PawnMoves extends Movements {
-    private ChessPiece piece;
-    private String direction;
+    private final ChessBoard board;
+    private final ChessPosition position;
+    private final ChessPiece piece;
+    private final String direction;
 
     public PawnMoves(ChessBoard board, ChessPosition position) {
         super(board, position);
-        this.piece = board.getPiece(position);
-        if (this.piece.getTeamColor() == ChessGame.TeamColor.WHITE) {
-            this.direction = "up";
-        } else {
-            this.direction = "down";
+        String direction1;
+        this.board = board;
+        this.position = position;
+        piece = board.getPiece(position);
+        direction1 = "";
+        switch (piece.getTeamColor()) {
+            case BLACK -> direction1 = "down";
+            case WHITE -> direction1 = "up";
         }
+        this.direction = direction1;
     }
 
-    private ChessMove basicMove() {
-        if (!(moveOneSquare(this.direction, this.position) == null)) {
-            return new ChessMove(this.position, moveOneSquare(this.direction, this.position));
-        }
-        return null;
+    private boolean canBeTakenForward(ChessPosition position) {
+        return position != this.position && position.isEmpty(board);
     }
 
-    private ChessMove initialMove() {
-        ChessPosition tempPosition = null;
-        if (!(moveOneSquare(this.direction, this.position) == null)) {
-            tempPosition = moveOneSquare(this.direction, this.position);
+    private boolean canBeTakenCorner(ChessPosition position) {
+        if (position.isEmpty(this.board)){
+            return false;
         }
-        if (!(tempPosition == null) && !(moveOneSquare(this.direction, tempPosition) == null)) {
-            var newPosition = moveOneSquare(this.direction, tempPosition);
-            return new ChessMove(this.position, newPosition);
-        }
-        return null;
+        return position != this.position && (board.getPiece(position).isOpponent(piece));
     }
 
-    private ArrayList<ChessPosition> captureMove() {
-        ChessPosition rightDiagonal = null;
-        ChessPosition leftDiagonal = null;
-        ArrayList<ChessPosition> diagonalSquares = new ArrayList<>();
-        if (Objects.equals(this.direction, "up")) {
-            if (moveOneSquare("upper right", this.position).isValid()) {
-                rightDiagonal = moveOneSquare("upper right", this.position);
-                diagonalSquares.add(rightDiagonal);
-            }
-            if (moveOneSquare("upper left", this.position).isValid()) {
-                leftDiagonal = moveOneSquare("upper left", this.position);
-                diagonalSquares.add(leftDiagonal);
-            }
-        } else {
-            if (moveOneSquare("lower right", this.position).isValid()) {
-                rightDiagonal = moveOneSquare("lower right", this.position);
-                diagonalSquares.add(rightDiagonal);
-            }
-            if (moveOneSquare("lower left", this.position).isValid()) {
-                leftDiagonal = moveOneSquare("lower left", this.position);
-                diagonalSquares.add(leftDiagonal);
-            }
+    private ChessPosition forwardMove() {
+        if (canBeTakenForward(moveOneSquare(direction, position))) {
+            return moveOneSquare(direction, position);
         }
-        return diagonalSquares;
+        return position;
     }
-    private Collection<ChessMove> allPawnMoves(){
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        // consider breaking down pieces of complex conditions into variables to make it easier to read
 
-        // boolean pieceIsBlack = ...
-        // boolean onBlackHomeRow = position == ...
-        // boolean pieceIsWhite = this.direction == ...
-        // boolean onWhiteHomeRow = position == ...
-        // boolean isOnHomeRow = pieceIsBlack && onBlackHomeRow || pieceIsWhite && onWhiteHomeRow
-
-        if ((this.direction.equals("up") && this.position.getRow() == 2) || (this.direction.equals("down") && this.position.getRow() == 7)) { // magic number: replace with e.g. const int WHITE_HOME_RANK = 2
-            //check if space is taken or if valid
-            var bm = basicMove();
-            if (!(bm == null) && (board.getPiece(bm.getEndPosition()) == null)) {
-                possibleMoves.add(bm);
-
-                var im = initialMove();
-                if (!(im == null) && (board.getPiece(im.getEndPosition()) == null)) {
-                    possibleMoves.add(im);
+    private ChessPosition initialMove(){
+        ChessPosition oneMove = moveOneSquare(direction, position);
+        ChessPosition twoMoves = moveOneSquare(direction, oneMove);
+        switch (direction){
+            case "up" ->{
+                if (position.getRow() == 2 && canBeTakenForward(oneMove) && canBeTakenForward(twoMoves)){
+                    return twoMoves;
+                }
+            }
+            case "down" ->{
+                if (position.getRow() == 7 && canBeTakenForward(oneMove) && canBeTakenForward(twoMoves)){
+                    return twoMoves;
                 }
             }
         }
-        var bm = basicMove();
-        if (!(bm == null) && (board.getPiece(bm.getEndPosition()) == null)) {
-            possibleMoves.add(bm);
-        }
-        for (var square : captureMove()) {
-            if (!(board.getPiece(square) == null)) {
-                if (!onTeam(board.getPiece(square))) {
-                    var newMove = new ChessMove(this.position, square);
-                    possibleMoves.add(newMove);
-                }
+        return position;
+    }
 
+    private Collection<ChessMove> captureMoves() {
+        var possibleMoves = new ArrayList<ChessMove>();
+        var startRow = position.getRow();
+        var startCol = position.getColumn();
+        ChessPosition leftCorner = null;
+        ChessPosition rightCorner = null;
+        switch (direction) {
+            case "up" -> {
+                leftCorner = new ChessPosition(startRow + 1, startCol - 1);
+                rightCorner = new ChessPosition(startRow + 1, startCol + 1);
+                if (canBeTakenCorner(leftCorner)) {
+                    possibleMoves.add(new ChessMove(position, leftCorner));
+                }
+                if (canBeTakenCorner(rightCorner)) {
+                    possibleMoves.add(new ChessMove(position, rightCorner));
+                }
+            }
+            case "down" -> {
+                leftCorner = new ChessPosition(startRow - 1, startCol - 1);
+                rightCorner = new ChessPosition(startRow - 1, startCol + 1);
+                if (canBeTakenCorner(leftCorner)) {
+                    possibleMoves.add(new ChessMove(position, leftCorner));
+                }
+                if (canBeTakenCorner(rightCorner)) {
+                    possibleMoves.add(new ChessMove(position, rightCorner));
+                }
             }
         }
         return possibleMoves;
     }
+    private Collection<ChessMove> basicMoves() {
+        var possibleMoves = new ArrayList<ChessMove>();
+        if(canBeTakenForward(forwardMove())){
+            possibleMoves.add(new ChessMove(position,forwardMove()));
+        }
+        if(canBeTakenForward(initialMove())){
+            possibleMoves.add(new ChessMove(position,initialMove()));
+        }
+        possibleMoves.addAll(captureMoves());
+        return possibleMoves;
+    }
 
-    @Override
-    public Collection<ChessMove> getMovesForPiece() {
-        var movesWithPromos = new ArrayList<ChessMove>();
-        for(var move : allPawnMoves()){
-            var endPos = move.getEndPosition();
-            var startPos = move.getStartPosition();
-            if((direction.equals("up") && endPos.getRow() == 8) || direction.equals("down") && endPos.getRow() == 1){
-                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.BISHOP));
-                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.QUEEN));
-                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.KNIGHT));
-                movesWithPromos.add(new ChessMove(startPos, endPos, ChessPiece.PieceType.ROOK));
-            }
-            else{
-                movesWithPromos.add(move);
+    private Collection<ChessMove> movesWithPromos(){
+        var allMoves = new HashSet<ChessMove>();
+        var possibleMoves = basicMoves();
+        ChessPosition endPosition = null;
+        ChessPosition startPosition = null;
+
+        for(var move : possibleMoves){
+            switch (direction) {
+                case "up" -> {
+                    endPosition = move.getEndPosition();
+                    startPosition = move.getStartPosition();
+                    if(endPosition.getRow() == 8){
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.BISHOP));
+                    }
+                    else{
+                        allMoves.add(move);
+                    }
+                }
+                case "down" -> {
+                    endPosition = move.getEndPosition();
+                    startPosition = move.getStartPosition();
+                    if(endPosition.getRow() == 1){
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.KNIGHT));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.QUEEN));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.ROOK));
+                        allMoves.add(new ChessMove(startPosition, endPosition, ChessPiece.PieceType.BISHOP));
+                    }
+                    else{
+                        allMoves.add(move);
+                    }
+                }
             }
         }
-        return new HashSet<ChessMove>(movesWithPromos);
+        return allMoves;
+    }
+    @Override
+    public Collection<ChessMove> getPieceMoves() {
+        return movesWithPromos();
     }
 }
-

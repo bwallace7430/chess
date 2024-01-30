@@ -9,10 +9,10 @@ public class RookMoves extends Movements {
     }
 
     @Override
-    public Collection<ChessMove> getMovesForPiece() {
-        ArrayList<ChessMove> possibleMoves = new ArrayList<>();
-        possibleMoves.addAll(moveHorizontal());
-        possibleMoves.addAll(moveVertical());
+    public Collection<ChessMove> getPieceMoves() {
+        var possibleMoves = new ArrayList<ChessMove>();
+        possibleMoves.addAll(fullHorizontal());
+        possibleMoves.addAll(fullVertical());
         return possibleMoves;
     }
 }

@@ -12,8 +12,8 @@ import java.util.Objects;
  */
 public class ChessMove {
     private final ChessPosition startPosition;
-    private ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPiece;
+    private final ChessPosition endPosition;
+    private final ChessPiece.PieceType promotionPiece;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
         this.startPosition = startPosition;
@@ -25,22 +25,19 @@ public class ChessMove {
         this.endPosition = endPosition;
         this.promotionPiece = null;
     }
-    public ChessMove(ChessPosition startPosition) {
-        this.startPosition = startPosition;
-    }
 
     /**
      * @return ChessPosition of starting location
      */
     public ChessPosition getStartPosition() {
-        return this.startPosition;
+        return startPosition;
     }
 
     /**
      * @return ChessPosition of ending location
      */
     public ChessPosition getEndPosition() {
-        return this.endPosition;
+        return endPosition;
     }
 
     /**
@@ -63,11 +60,13 @@ public class ChessMove {
         myString += ", ";
         myString += Integer.toString((this.endPosition.getColumn()));
         myString += "], ";
-        switch (promotionPiece){
-            case ROOK -> myString += "Rook;";
-            case QUEEN -> myString += "Queen";
-            case BISHOP -> myString += "Bishop";
-            case KNIGHT -> myString += "Knight";
+        if(promotionPiece != null) {
+            switch (promotionPiece) {
+                case ROOK -> myString += "Rook;";
+                case QUEEN -> myString += "Queen";
+                case BISHOP -> myString += "Bishop";
+                case KNIGHT -> myString += "Knight";
+            }
         }
         return myString;
     }

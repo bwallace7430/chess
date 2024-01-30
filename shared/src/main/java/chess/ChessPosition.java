@@ -13,15 +13,15 @@ public class ChessPosition {
     private final int colNum;
 
     public ChessPosition(int row, int col) {
-        this.rowNum = row;
-        this.colNum = col;
+        rowNum = row;
+        colNum = col;
     }
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
      */
     public int getRow() {
-        return this.rowNum;
+        return rowNum;
     }
 
     /**
@@ -29,11 +29,15 @@ public class ChessPosition {
      * 1 codes for the left row
      */
     public int getColumn() {
-        return this.colNum;
+        return colNum;
     }
 
     public boolean isValid(){
-        return this.rowNum <= 8 && this.colNum <= 8 && this.rowNum >= 1 && this.colNum >= 1;
+        return rowNum <= 8 && colNum <= 8 && rowNum >= 1 && colNum >= 1;
+    }
+
+    public boolean isEmpty(ChessBoard board){
+        return board.getPiece(this) == null;
     }
 
     @Override
@@ -41,9 +45,6 @@ public class ChessPosition {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ChessPosition that = (ChessPosition) o;
-        if (rowNum == that.rowNum && colNum == that.colNum){
-            System.out.println("This is true");
-        }
         return rowNum == that.rowNum && colNum == that.colNum;
     }
 

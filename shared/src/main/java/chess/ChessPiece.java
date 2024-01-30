@@ -1,8 +1,7 @@
 package chess;
 
-import org.junit.jupiter.api.Assertions;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -15,7 +14,7 @@ public class ChessPiece {
     private final ChessPiece.PieceType pieceType;
     public ChessPiece(ChessGame.TeamColor color, ChessPiece.PieceType type) {
         this.pieceColor = color;
-        this.pieceType = type;
+        pieceType = type;
     }
 
     /**
@@ -34,14 +33,18 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        return this.pieceColor;
+        return pieceColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        return this.pieceType;
+        return pieceType;
+    }
+
+    public boolean isOpponent(ChessPiece obstructingPiece){
+        return this.getTeamColor() != obstructingPiece.getTeamColor();
     }
 
     /**
@@ -52,27 +55,15 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        switch (this.pieceType) {
-            case ROOK -> {
-                return new RookMoves(board, myPosition).getMovesForPiece();
-            }
-            case BISHOP -> {
-                return new BishopMoves(board, myPosition).getMovesForPiece();
-            }
-            case QUEEN -> {
-                return new QueenMoves(board, myPosition).getMovesForPiece();
-            }
-            case KING -> {
-                return new KingMoves(board, myPosition).getMovesForPiece();
-            }
-            case PAWN -> {
-                return new PawnMoves(board, myPosition).getMovesForPiece();
-           }
-            case KNIGHT -> {
-                return new KnightMoves(board, myPosition).getMovesForPiece();
-            }
+        switch (this.getPieceType()){
+            case BISHOP -> {return new BishopMoves(board, myPosition).getPieceMoves();}
+            case ROOK -> {return new RookMoves(board,myPosition).getPieceMoves();}
+            case QUEEN -> {return new QueenMoves(board, myPosition).getPieceMoves();}
+            case KING -> {return new KingMoves(board, myPosition).getPieceMoves();}
+            case KNIGHT -> {return new KnightMoves(board, myPosition).getPieceMoves();}
+            case PAWN -> {return new PawnMoves(board, myPosition).getPieceMoves();}
+            default -> {throw new RuntimeException("Invalid piece");}
         }
-        return null;
     }
     @Override
     public boolean equals(Object o) {

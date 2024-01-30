@@ -61,7 +61,7 @@ copy. Look into it, deep copies are IMPORTANT.
 There's lots of inheritance and classes with these. Important: List, Set, Queue, Map, Iterator
 #### Aggregation
 You are made up of different organs. A class is made up of member variables. This is an alternative to 
-extension/inheritance.
+extension/inheritance. The same thing as Encapsulation.
 #### MultiSelect
 A keyboard shortcut that creates multiple cursors. Something with Alt? Look it up.
 #### Comparables
@@ -72,4 +72,19 @@ All the intermittent code is skipped, and the code continues from where it is ca
 happen. Exceptionally bad things. If an exception could be thrown by a function, you have to say that in your function.
 In try{} finally{}, finally block will always run, even if there's an exception thrown and not caught. Try with 
 resources will take care of the resources that you would otherwise need a finally block.
+## Week 4
+### Domain Driven Design
+Focuses the design around the problem that is being solved/the audience that is using the product. Focus on: actors,
+tasks, objects, and interactions. Simplify your domain to represent what the customer actually requires.
+### Object Oriented Design
+Creates separations and constructs that everyone is sorted into. Objects have two things: properties and methods
+#### Abstraction
+More efficient, more security, more adaptable, more reuse.
+#### Relationships
+is-a: Inheritance; has-a: Aggregation (field property); uses-a: Transient Association (often a parameter for 
+a method)
+#### Simplicity
+DRY (Don't Repeat Yourself); YAGNI(You Aren't Gonna Need It) - with this one, be careful not to decompose things
+TOO much or over-optimize; 
+
 
