@@ -29,6 +29,9 @@ public class PawnMoves extends Movements {
     }
 
     private boolean canBeTakenCorner(ChessPosition position) {
+        if(!position.isValid()){
+            return false;
+        }
         if (position.isEmpty(this.board)){
             return false;
         }
