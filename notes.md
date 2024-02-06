@@ -100,6 +100,14 @@ An interface class is declared. The methods of the interface are implemented inl
 the form: () -> 0 (if the function has no parameters and returns 0) OR (a, b) -> a+b (if the function has two parameters
 a and b, and returns a+b)
 #### Functional Interface
-An interface that only declares one method function. 
-
+An interface that only declares one method function.
+## Week 6
+### Server
+A server is the computer. Most of the time the services are some sort of a product or something being provided, while
+the server mainly handles network requests and endpoints.
+### Endpoints
+Clear, register, login, logout, list games, create game, join game; Can be thought of as methods.
+### Good design
+Domain driven, encapsulation, inheritance, cohesive, uncoupled, decomposition, YAGNI, POLA, KISS, single responsibility,
+open/closed, liskov, interface segregation, dependency inversion
 
