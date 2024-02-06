@@ -1,5 +1,7 @@
 package chess;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -11,8 +13,7 @@ import java.util.Collection;
 public class ChessGame {
     private TeamColor teamTurn;
     private ChessBoard currBoard;
-    private ChessPosition blackKingPos;
-    private ChessPosition whiteKingPos;
+
     public ChessGame() {
     }
 
@@ -30,6 +31,10 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
+    }
+
+    private boolean isYourTurn(TeamColor team) {
+        return (team == teamTurn);
     }
 
     /**
@@ -50,7 +55,26 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         var piece = getBoard().getPiece(startPosition);
         var possibleMoves = piece.pieceMoves(getBoard(), startPosition);
-        return possibleMoves;
+        var validMoves = new ArrayList<ChessMove>();
+        for (var move : possibleMoves){
+            if(canMovePiece(move, piece)){
+                validMoves.add(move);
+            }
+        }
+        return validMoves;
+    }
+
+    private boolean canMovePiece(ChessMove move, ChessPiece piece) {
+        var tempBoard = getBoard();
+        var currPieceInNewPos = getBoard().getPiece(move.getEndPosition());
+        tempBoard.removePiece(move.getStartPosition());
+        tempBoard.addPiece(move.getEndPosition(), piece);
+        var isInCheck = isInCheck(piece.getTeamColor());
+
+        tempBoard.removePiece(move.getEndPosition());
+        tempBoard.addPiece(move.getStartPosition(), piece);
+        tempBoard.addPiece(move.getEndPosition(), currPieceInNewPos);
+        return !isInCheck;
     }
 
     /**
@@ -63,32 +87,24 @@ public class ChessGame {
         var startPos = move.getStartPosition();
         var endPos = move.getEndPosition();
         var piece = getBoard().getPiece(startPos);
-        if(teamTurn != piece.getTeamColor()){
+
+        if(piece == null){
             throw new InvalidMoveException("Move is not valid");
         }
+        if (!isYourTurn(piece.getTeamColor())) {
+            throw new InvalidMoveException("Move is not valid");
+        }
+
         var validMoves = validMoves(startPos);
-        if(validMoves.contains(move)){
+        if (validMoves.contains(move)) {
             var newBoard = getBoard();
             newBoard.removePiece(startPos);
             newBoard.addPiece(endPos, piece);
-            setBoard(newBoard);
-            switch (teamTurn) {
+            switch (getTeamTurn()) {
                 case BLACK -> setTeamTurn(TeamColor.WHITE);
                 case WHITE -> setTeamTurn(TeamColor.BLACK);
             }
-
-            if (piece.getPieceType() == ChessPiece.PieceType.KING) {
-                switch (piece.getTeamColor()) {
-                    case WHITE -> {
-                        whiteKingPos = endPos;
-                    }
-                    case BLACK -> {
-                        blackKingPos = endPos;
-                    }
-                }
-            }
-        }
-        else{
+        } else {
             throw new InvalidMoveException("Move is not valid");
         }
     }
@@ -100,7 +116,28 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        for(int i=1; i<9; i++){
+            for(int j=1; j<9; j++){
+                var position = new ChessPosition(i, j);
+                var piece = getBoard().getPiece(position);
+                if(piece == null){
+                    continue;
+                }
+                if(piece.getTeamColor()!=teamColor){
+                    var possibleMoves = piece.pieceMoves(getBoard(), position);
+                    for(var move:possibleMoves){
+                        var pieceBeingCaptured = getBoard().getPiece(move.getEndPosition());
+                        if(pieceBeingCaptured == null){
+                            continue;
+                        }
+                        if(pieceBeingCaptured.getPieceType() == ChessPiece.PieceType.KING){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
