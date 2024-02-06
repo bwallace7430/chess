@@ -153,6 +153,9 @@ public class ChessGame {
             for(int j=1; j<9; j++){
                 var position = new ChessPosition(i, j);
                 var piece = getBoard().getPiece(position);
+                if(piece == null){
+                    continue;
+                }
                 if(piece.getTeamColor() == teamColor){
                     possibleMoves.addAll(validMoves(position));
                 }
@@ -163,6 +166,7 @@ public class ChessGame {
         }
         return true;
     }
+
     /**
      * Determines if the given team is in checkmate
      *
