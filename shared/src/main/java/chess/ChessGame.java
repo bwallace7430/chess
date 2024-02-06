@@ -2,6 +2,7 @@ package chess;
 
 import java.sql.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -99,7 +100,13 @@ public class ChessGame {
         if (validMoves.contains(move)) {
             var newBoard = getBoard();
             newBoard.removePiece(startPos);
-            newBoard.addPiece(endPos, piece);
+            if(move.getPromotionPiece() != null){
+                var newPiece = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+                newBoard.addPiece(endPos, newPiece);
+            }
+            else {
+                newBoard.addPiece(endPos, piece);
+            }
             switch (getTeamTurn()) {
                 case BLACK -> setTeamTurn(TeamColor.WHITE);
                 case WHITE -> setTeamTurn(TeamColor.BLACK);
@@ -140,6 +147,22 @@ public class ChessGame {
         return false;
     }
 
+    private boolean possibleMovesExist(TeamColor teamColor){
+        var possibleMoves = new ArrayList<ChessMove>();
+        for(int i=1; i<9; i++){
+            for(int j=1; j<9; j++){
+                var position = new ChessPosition(i, j);
+                var piece = getBoard().getPiece(position);
+                if(piece.getTeamColor() == teamColor){
+                    possibleMoves.addAll(validMoves(position));
+                }
+            }
+        }
+        if(possibleMoves.isEmpty()){
+            return false;
+        }
+        return true;
+    }
     /**
      * Determines if the given team is in checkmate
      *
@@ -147,7 +170,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(isInCheck(teamColor)){
+            if(!possibleMovesExist(teamColor)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -158,7 +186,12 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if(!isInCheck(teamColor)){
+            if(!possibleMovesExist(teamColor)){
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
