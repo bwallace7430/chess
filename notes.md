@@ -85,6 +85,21 @@ is-a: Inheritance; has-a: Aggregation (field property); uses-a: Transient Associ
 a method)
 #### Simplicity
 DRY (Don't Repeat Yourself); YAGNI(You Aren't Gonna Need It) - with this one, be careful not to decompose things
-TOO much or over-optimize; 
+TOO much or over-optimize;
+## Week 5
+### Different Types of Classes
+#### Static Inner Class
+They are generally private or protected, and are only used within the class they are declared.
+#### Inner Class
+Can access everything that its parent class has, including (and most importantly, the "this" pointer). I'm not really
+sure about this one; look it up. Has access to the stack of variables from the scope where it was created (this is 
+called closure). This is good for "screenshotting" the environment of the program at one specific time. JavaScript 
+does this.
+#### Anonymous Class
+An interface class is declared. The methods of the interface are implemented inline on the fly. Lambda functions have 
+the form: () -> 0 (if the function has no parameters and returns 0) OR (a, b) -> a+b (if the function has two parameters
+a and b, and returns a+b)
+#### Functional Interface
+An interface that only declares one method function. 
 
 
