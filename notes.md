@@ -110,4 +110,9 @@ Clear, register, login, logout, list games, create game, join game; Can be thoug
 ### Good design
 Domain driven, encapsulation, inheritance, cohesive, uncoupled, decomposition, YAGNI, POLA, KISS, single responsibility,
 open/closed, liskov, interface segregation, dependency inversion
-
+### Test-Driven Development/Error Handling
+Write your code and your tests at the same time. Your tests should inform your code and your code should inform your 
+tests. Exception class with error code that matches HTTP codes. Research this one a bit more. I'm not sure I get it.
+### HTTP
+Client to server communication. Domain name/host name is kinda like a general location. Port is a specific location on 
+the computer. Spark Java helps you to write end handlers.
