@@ -116,3 +116,12 @@ tests. Exception class with error code that matches HTTP codes. Research this on
 ### HTTP
 Client to server communication. Domain name/host name is kinda like a general location. Port is a specific location on 
 the computer. Spark Java helps you to write end handlers.
+## Week 7
+### Error Handling Part 2
+Use Spark.notFound in place of an HTTP endpoint such as Spark.get or Spark.post . You can also have a Spark.exception . 
+Talk to Jonah about this one again.
+### Setting up the client
+Allow multiple instances in order to have play chess against yourself.
+### Phase 3 Web API
+Mark resources folder as resources root, mark test folder as resources root. Your DataAccessLayer has to have a memory 
+version and a SQL version
