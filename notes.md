@@ -125,3 +125,13 @@ Allow multiple instances in order to have play chess against yourself.
 ### Phase 3 Web API
 Mark resources folder as resources root, mark test folder as resources root. Your DataAccessLayer has to have a memory 
 version and a SQL version
+## Week 8
+### Phase 3 Tips
+If you're running on a time constraint, look at Pet Shop. Do not create a global object for your data access. Create
+a data access object, and pass in that object to your service and then pass that into your server. DataAccessInterface 
+has two implementations (Memory and SQL). The memory implementation is hardcoded data.
+### Test Driven Development (Part 2)
+You want a middle ground between over-testing and under-testing. Test: can you call a function? Can you pass in the 
+expected parameters? Does it return the expected value? Don't test independent features that will naturally be tested 
+by other features (ie register user is tested by log in user). Use the library junit (import org.junit.jupiter.things)
+for testing. Before your test write "@Test"
