@@ -1,9 +1,10 @@
 package dataObjects;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
 
-public record User(String username, String password, String email) {
+public record AuthToken(String username, String authToken) {
     public String toString(){
         return new Gson().toJson(this);
     }
+}
 }
