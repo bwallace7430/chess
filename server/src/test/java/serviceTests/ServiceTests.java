@@ -25,8 +25,17 @@ class ServiceTests {
     void registerUser() throws DataAccessException {
         var userAuth = service.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
-        assertFalse(userAuth.authToken()=="");
-        assertFalse(userAuth.authToken()==null);
+        assertNotSame("", userAuth.authToken());
+        assertNotNull(userAuth.authToken());
+    }
+
+    @Test
+    void registerExistingUser() throws DataAccessException {
+        var userAuth = service.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+
+        assertThrows(DataAccessException.class, () -> {
+            service.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        });
     }
 
 
