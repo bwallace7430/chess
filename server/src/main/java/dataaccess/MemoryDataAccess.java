@@ -1,15 +1,14 @@
-package dataaccess;
-import dataObjects.AuthToken;
-import dataObjects.User;
+package dataAccess;
 
 import java.util.Collection;
-import java.util.HashMap;
-public class MemoryDataAccess implements DataAccess{
-    private Collection<User>allUsers;
-    private Collection<AuthToken>allAuthTokens;
+import java.util.UUID;
 
-    public User getUser(String username){
-        for (User user : allUsers){
+public class MemoryDataAccess implements DataAccess{
+    private Collection<model.UserData>allUsers;
+    private Collection<model.AuthData>allAuthTokens;
+
+    public model.UserData getUser(String username){
+        for (model.UserData user : allUsers){
             if(user.username() == username){
                 return user;
             }
@@ -18,12 +17,21 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     public void createUser(String username, String password, String email){
-        var newUser = new User(username, password, email);
+        var newUser = new model.UserData(username, password, email);
         allUsers.add(newUser);
     }
 
     public void generateAuthToken(String username){
+        var authToken = UUID.randomUUID().toString();
+        var newAuthTokenObject = new model.AuthData(username, authToken);
+    }
 
-        var newAuthToken = new AuthToken(username, )
+    public model.AuthData getAuthToken(String username){
+        for (model.AuthData authData : allAuthTokens){
+            if(authData.username() == username){
+                return authData;
+            }
+        }
+        return null;
     }
 }
