@@ -1,14 +1,17 @@
 package dataAccess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
+import model.UserData;
+import model.AuthData;
 
 public class MemoryDataAccess implements DataAccess{
-    private Collection<model.UserData>allUsers;
-    private Collection<model.AuthData>allAuthTokens;
+    private Collection<UserData>allUsers = new ArrayList<UserData>();
+    private Collection<AuthData>allAuthTokens = new ArrayList<AuthData>();
 
-    public model.UserData getUser(String username){
-        for (model.UserData user : allUsers){
+    public UserData getUser(String username){
+        for (UserData user : allUsers){
             if(user.username() == username){
                 return user;
             }
@@ -23,11 +26,12 @@ public class MemoryDataAccess implements DataAccess{
 
     public void generateAuthToken(String username){
         var authToken = UUID.randomUUID().toString();
-        var newAuthTokenObject = new model.AuthData(username, authToken);
+        var newAuthTokenObject = new AuthData(username, authToken);
+        allAuthTokens.add(newAuthTokenObject);
     }
 
-    public model.AuthData getAuthToken(String username){
-        for (model.AuthData authData : allAuthTokens){
+    public AuthData getAuthToken(String username){
+        for (AuthData authData : allAuthTokens){
             if(authData.username() == username){
                 return authData;
             }
