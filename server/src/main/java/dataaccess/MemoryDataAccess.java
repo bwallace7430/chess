@@ -32,13 +32,26 @@ public class MemoryDataAccess implements DataAccess{
         allAuthTokens.add(newAuthTokenObject);
     }
 
-    public AuthData getAuthToken(String username){
+    public AuthData getAuthDataByUsername(String username){
         for (AuthData authData : allAuthTokens){
             if(authData.username() == username){
                 return authData;
             }
         }
         return null;
+    }
+
+    public AuthData getAuthDataByAuthToken(String authToken){
+        for (AuthData authData : allAuthTokens){
+            if(authData.authToken() == authToken){
+                return authData;
+            }
+        }
+        return null;
+    }
+
+    public void removeAuthToken(String authToken){
+        allAuthTokens.removeIf(authData -> authData.authToken() == authToken);
     }
 
     public void deleteGames(){

@@ -74,4 +74,12 @@ class ServiceTests {
         assertNull(data.getAuthDataByUsername("abe_the_babe"));
         assertNull(data.getAuthDataByAuthToken(userAuth.authToken()));
     }
+
+    @Test
+    void invalidLogout() throws DataAccessException{
+        var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        sessionService.endSession(userAuth.authToken());
+
+        assertThrows(DataAccessException.class, ()-> sessionService.endSession(userAuth.authToken()));
+    }
     }
