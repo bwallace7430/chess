@@ -9,6 +9,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.RegistrationService;
 import service.AdminService;
+import service.SessionService;
 
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ class ServiceTests {
     MemoryDataAccess data = new MemoryDataAccess();
     RegistrationService registrationService = new RegistrationService(data);
     AdminService adminService = new AdminService(data);
+    SessionService sessionService = new SessionService(data);
 
     @BeforeEach
     void clearData() {
@@ -33,7 +35,7 @@ class ServiceTests {
         assertNull(data.getUser("abe_the_babe"));
     }
     @Test
-    void registerUser() throws DataAccessException {
+    void validRegister() throws DataAccessException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
         assertNotSame("", userAuth.authToken());
@@ -41,13 +43,26 @@ class ServiceTests {
     }
 
     @Test
-    void registerExistingUser() throws DataAccessException {
+    void invalidRegister() throws DataAccessException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
         assertThrows(DataAccessException.class, () -> {
             registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         });
     }
+    @Test
+    void validLogin() throws DataAccessException {
+        registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
 
+        assertSame(data.getAuthToken("abe_the_babe"), newAuth);
+    }
 
+    @Test
+    void invalidLogin() throws DataAccessException {
+        registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+
+        assertThrows(DataAccessException.class, ()-> sessionService.createSession("honest_abe", "lincolnR0ck$"));
+        assertThrows(DataAccessException.class, ()->sessionService.createSession("abe_the_babe", "l!nc0lnR0ck$"));
+    }
     }
