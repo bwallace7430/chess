@@ -3,7 +3,6 @@ package service;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import model.AuthData;
-import model.UserData;
 public class SessionService {
     private final MemoryDataAccess dataAccessObject;
     public SessionService(MemoryDataAccess data){

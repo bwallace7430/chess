@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import service.RegistrationService;
 import service.AdminService;
 import service.SessionService;
+import service.GameService;
 
 import javax.xml.crypto.Data;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ class ServiceTests {
     RegistrationService registrationService = new RegistrationService(data);
     AdminService adminService = new AdminService(data);
     SessionService sessionService = new SessionService(data);
+    GameService gameService = new GameService(data);
 
     @BeforeEach
     void clearData() {
@@ -81,5 +83,13 @@ class ServiceTests {
         sessionService.endSession(userAuth.authToken());
 
         assertThrows(DataAccessException.class, ()-> sessionService.endSession(userAuth.authToken()));
+    }
+
+    @Test validCreateGame() throws DataAccessException{
+        var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        var newGame = gameService.createGame(userAuth.authToken(), "Abe and the Baberahams");
+
+        var allGames = gameService.listGames();
+        assertTrue(allGames.contains(newGame));
     }
     }
