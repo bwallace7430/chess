@@ -5,10 +5,12 @@ import java.util.Collection;
 import java.util.UUID;
 import model.UserData;
 import model.AuthData;
+import model.GameData;
 
 public class MemoryDataAccess implements DataAccess{
     private Collection<UserData>allUsers = new ArrayList<UserData>();
     private Collection<AuthData>allAuthTokens = new ArrayList<AuthData>();
+    private Collection<GameData>allGames = new ArrayList<GameData>();
 
     public UserData getUser(String username){
         for (UserData user : allUsers){
@@ -37,5 +39,15 @@ public class MemoryDataAccess implements DataAccess{
             }
         }
         return null;
+    }
+
+    public void deleteGames(){
+        allGames.clear();
+    }
+    public void deleteUsers(){
+        allUsers.clear();
+    }
+    public void deleteAuths(){
+        allAuthTokens.clear();
     }
 }
