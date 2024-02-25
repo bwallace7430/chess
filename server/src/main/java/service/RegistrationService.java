@@ -14,7 +14,7 @@ public class RegistrationService {
         if(dataAccessObject.getUser(username) == null){
             dataAccessObject.createUser(username, password, email);
             dataAccessObject.generateAuthToken(username);
-            authToken = dataAccessObject.getAuthToken(username);
+            authToken = dataAccessObject.getAuthDataByUsername(username);
         }
         else{
             throw new DataAccessException("A user with that username already exists.");

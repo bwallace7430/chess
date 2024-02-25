@@ -55,7 +55,7 @@ class ServiceTests {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
 
-        assertSame(data.getAuthToken("abe_the_babe"), newAuth);
+        assertSame(data.getAuthDataByUsername("abe_the_babe"), newAuth);
     }
 
     @Test
@@ -64,5 +64,14 @@ class ServiceTests {
 
         assertThrows(DataAccessException.class, ()-> sessionService.createSession("honest_abe", "lincolnR0ck$"));
         assertThrows(DataAccessException.class, ()->sessionService.createSession("abe_the_babe", "l!nc0lnR0ck$"));
+    }
+
+    @Test
+    void validLogout() throws DataAccessException{
+        var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        sessionService.endSession(userAuth.authToken());
+
+        assertNull(data.getAuthDataByUsername("abe_the_babe"));
+        assertNull(data.getAuthDataByAuthToken(userAuth.authToken()));
     }
     }

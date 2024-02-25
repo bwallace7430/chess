@@ -21,8 +21,15 @@ public class SessionService {
             }
             else{
                 dataAccessObject.generateAuthToken(username);
-                return dataAccessObject.getAuthToken(username);
+                return dataAccessObject.getAuthDataByUsername(username);
             }
         }
+    }
+
+    public void endSession(String authToken) throws DataAccessException{
+        if(dataAccessObject.getAuthDataByAuthToken(authToken) == null){
+            throw new DataAccessException("Can not log out. This user is not authorized.");
+        }
+        dataAccessObject.removeAuthToken(authToken);
     }
 }
