@@ -10,9 +10,9 @@ import model.AuthData;
 import model.GameData;
 
 public class MemoryDataAccess implements DataAccess{
-    private Collection<UserData>allUsers = new ArrayList<UserData>();
-    private Collection<AuthData>allAuthTokens = new ArrayList<AuthData>();
-    private Collection<GameData>allGames = new ArrayList<GameData>();
+    private Collection<UserData>allUsers = new ArrayList<>();
+    private Collection<AuthData>allAuthTokens = new ArrayList<>();
+    private Collection<GameData>allGames = new ArrayList<>();
     private int gameID = 0;
 
     public UserData getUser(String username){

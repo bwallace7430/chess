@@ -3,10 +3,8 @@ package service;
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
-import model.AuthData;
 import model.GameData;
 
-import javax.xml.crypto.Data;
 import java.util.Collection;
 
 public class GameService {
