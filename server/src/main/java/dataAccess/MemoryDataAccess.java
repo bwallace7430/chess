@@ -10,14 +10,14 @@ import model.AuthData;
 import model.GameData;
 
 public class MemoryDataAccess implements DataAccess{
-    private Collection<UserData>allUsers = new ArrayList<>();
-    private Collection<AuthData>allAuthTokens = new ArrayList<>();
-    private Collection<GameData>allGames = new ArrayList<>();
+    private final Collection<UserData>allUsers = new ArrayList<>();
+    private final Collection<AuthData> allAuthData = new ArrayList<>();
+    private final Collection<GameData>allGames = new ArrayList<>();
     private int gameID = 0;
 
     public UserData getUser(String username){
         for (UserData user : allUsers){
-            if(user.username() == username){
+            if(user.username().equals(username)){
                 return user;
             }
         }
@@ -25,22 +25,23 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     public void createUser(String username, String password, String email) throws DataAccessException{
-        if(username == null || username == "" || password == null || password == "" || email == null || email == ""){
+        if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
             throw new DataAccessException("Correct info not found.");
         }
         var newUser = new model.UserData(username, password, email);
         allUsers.add(newUser);
     }
 
-    public void generateAuthToken(String username){
+    public AuthData generateAuthToken(String username){
         var authToken = UUID.randomUUID().toString();
         var newAuthTokenObject = new AuthData(username, authToken);
-        allAuthTokens.add(newAuthTokenObject);
+        allAuthData.add(newAuthTokenObject);
+        return newAuthTokenObject;
     }
 
     public AuthData getAuthDataByUsername(String username){
-        for (AuthData authData : allAuthTokens){
-            if(authData.username() == username){
+        for (AuthData authData : allAuthData){
+            if(authData.username().equals(username)){
                 return authData;
             }
         }
@@ -48,16 +49,16 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     public AuthData getAuthDataByAuthToken(String authToken){
-        for (AuthData authData : allAuthTokens){
-            if(authData.authToken() == authToken){
+        for (AuthData authData : allAuthData){
+            if(authData.authToken().equals(authToken)){
                 return authData;
             }
         }
         return null;
     }
 
-    public void removeAuthToken(String authToken){
-        allAuthTokens.removeIf(authData -> authData.authToken() == authToken);
+    public void removeAuthData(String authToken){
+        allAuthData.removeIf(authData -> authData.authToken().equals(authToken));
     }
 
     public GameData createGame(String gameName){
@@ -120,6 +121,6 @@ public class MemoryDataAccess implements DataAccess{
         allUsers.clear();
     }
     public void deleteAuths(){
-        allAuthTokens.clear();
+        allAuthData.clear();
     }
 }

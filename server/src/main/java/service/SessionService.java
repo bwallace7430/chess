@@ -1,8 +1,6 @@
 package service;
 
 import dataAccess.DataAccess;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
 import model.AuthData;
 public class SessionService {
@@ -17,12 +15,11 @@ public class SessionService {
             throw new ResponseException(401, "Error: unauthorized");
         }
         else{
-            if(user.password() != password){
+            if(!user.password().equals(password)){
                 throw new ResponseException(401, "Error: unauthorized");
             }
             else{
-                dataAccessObject.generateAuthToken(username);
-                return dataAccessObject.getAuthDataByUsername(username);
+                return dataAccessObject.generateAuthToken(username);
             }
         }
     }
@@ -31,6 +28,6 @@ public class SessionService {
         if(dataAccessObject.getAuthDataByAuthToken(authToken) == null){
             throw new ResponseException(401, "Error: unauthorized");
         }
-        dataAccessObject.removeAuthToken(authToken);
+        dataAccessObject.removeAuthData(authToken);
     }
 }

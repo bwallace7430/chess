@@ -1,12 +1,9 @@
 package server;
 
-import chess.ChessGame;
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
-import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
-import model.AuthData;
 import model.GameData;
 import model.UserData;
 import service.AdminService;
@@ -14,6 +11,9 @@ import service.GameService;
 import service.RegistrationService;
 import service.SessionService;
 import spark.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class Server {
     private final RegistrationService registrationService;
@@ -62,6 +62,8 @@ public class Server {
 
     private void exceptionHandler(ResponseException ex, Request request, Response response) {
         response.status(ex.ErrorCode());
+        var error = new ErrorResponse(ex.getMessage());
+        response.body(new Gson().toJson(error));
     }
 
     private Object clearDatabase(Request request, Response response) {
@@ -80,33 +82,49 @@ public class Server {
     private Object login(Request request, Response response) throws ResponseException{
         var user = new Gson().fromJson(request.body(), LoginRequest.class);
         var authData = sessionService.createSession(user.username(), user.password());
+        response.status(200);
         return new Gson().toJson(authData);
     }
 
     private Object logout(Request request, Response response) throws ResponseException{
-        var authToken = new Gson().fromJson(request.body(), String.class);
+        var authToken = request.headers("authorization");
         sessionService.endSession(authToken);
         response.status(200);
         return "";
     }
 
     private Object listGames(Request request, Response response) throws ResponseException{
-        var authToken = new Gson().fromJson(request.headers("authorization"), String.class);
-        var all_games = gameService.listGames(authToken);
+        var authToken = request.headers("authorization");
+        var allGames = gameService.listGames(authToken);
+        ArrayList<GameListEntry> list = new ArrayList<GameListEntry>();
+        for(GameData game : allGames){
+            GameListEntry entry = new GameListEntry(game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName());
+            list.add(entry);
+        }
+        ListGameResponse responseList = new ListGameResponse(list);
         response.status(200);
-        return all_games;
+        return new Gson().toJson(responseList);
     }
 
     private Object createGame(Request request, Response response) throws ResponseException{
-        var authToken = new Gson().fromJson(request.headers("authorization"), String.class);
-        var gameName = new Gson().fromJson(request.body(), String.class);
+        var authToken = request.headers("authorization");
+        var game = new Gson().fromJson(request.body(), CreateGameRequest.class);
+        var gameName = game.gameName();
+        var responseObject = new CreateGameResponse(gameService.createGame(authToken, gameName).gameID());
         response.status(200);
-        return gameService.createGame(authToken, gameName);
+        return new Gson().toJson(responseObject);
     }
 
     private Object joinGame(Request request, Response response) throws ResponseException{
-        var authToken = new Gson().fromJson(request.headers("authorization"), String.class);
+        var authToken = request.headers("authorization");
         var game = new Gson().fromJson(request.body(), JoinGameRequest.class);
-        return gameService.joinGame(authToken, game.gameID(), game.convertColorToEnum());
+        if(game.convertColorToEnum() == null){
+            gameService.joinGame(authToken, game.gameID());
+        }
+        else {
+            gameService.joinGame(authToken, game.gameID(), game.convertColorToEnum());
+        }
+        response.status(200);
+        return "";
     }
 }
