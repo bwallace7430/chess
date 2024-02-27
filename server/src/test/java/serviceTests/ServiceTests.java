@@ -48,7 +48,8 @@ class ServiceTests {
     }
     @Test
     void validLogin() throws ResponseException {
-        registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
+        sessionService.endSession(userAuth.authToken());
         var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
 
         assertSame(data.getAuthDataByUsername("abe_the_babe"), newAuth);
