@@ -1,57 +1,65 @@
 package service;
 
 import chess.ChessGame;
+import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import exception.ResponseException;
 import model.GameData;
 
 import java.util.Collection;
 
 public class GameService {
-    private final MemoryDataAccess dataAccessObject;
+    private final DataAccess dataAccessObject;
 
-    public GameService(MemoryDataAccess data) {
+    public GameService(DataAccess data) {
         dataAccessObject = data;
     }
 
-    public GameData createGame(String authToken, String gameName) throws DataAccessException {
+    public GameData createGame(String authToken, String gameName) throws ResponseException {
         if (gameName == null || gameName.isEmpty()) {
-            throw new DataAccessException("Can not create game. Valid game name was not given");
+            throw new ResponseException(400, "Error: bad request");
         } else if (dataAccessObject.getAuthDataByAuthToken(authToken) != null) {
             return dataAccessObject.createGame(gameName);
         }
         else {
-            throw new DataAccessException("Can not create game. User is not authorized.");
+            throw new ResponseException(401, "Error: user unauthorized");
         }
     }
 
-    public Collection<GameData> listGames(String authToken) throws DataAccessException {
+    public Collection<GameData> listGames(String authToken) throws ResponseException {
         if (dataAccessObject.getAuthDataByAuthToken(authToken) == null) {
-            throw new DataAccessException("Can not list games. User is not authorized.");
+            throw new ResponseException(401, "Error: unauthorized");
 
         }
         return dataAccessObject.getAllGames();
     }
 
-    public GameData joinGame(String authToken, int gameID, ChessGame.TeamColor playerColor) throws DataAccessException{
+    public GameData joinGame(String authToken, int gameID, ChessGame.TeamColor playerColor) throws ResponseException{
         if (dataAccessObject.getAuthDataByAuthToken(authToken) == null) {
-            throw new DataAccessException("Can not join game. User is not authorized.");
+            throw new ResponseException(401, "Error: unauthorized");
         }
         var game = dataAccessObject.getGameByID(gameID);
         if (game == null){
-            throw new DataAccessException("Can not join game. Game does not exist.");
+            throw new ResponseException(400, "Error: bad request");
         }
         var username = dataAccessObject.getAuthDataByAuthToken(authToken).username();
-        return dataAccessObject.addPlayerToGame(game, username, playerColor);
+        try {
+            game = dataAccessObject.addPlayerToGame(game, username, playerColor);
+        }
+        catch (DataAccessException e){
+            throw new ResponseException(403, "Error: already taken");
+        }
+        return game;
     }
 
-    public GameData joinGame(String authToken, int gameID) throws DataAccessException{
+    public GameData joinGame(String authToken, int gameID) throws ResponseException{
         if (dataAccessObject.getAuthDataByAuthToken(authToken) == null) {
-            throw new DataAccessException("Can not join game. User is not authorized.");
+            throw new ResponseException(401, "Error: unauthorized");
         }
         var game = dataAccessObject.getGameByID(gameID);
         if (game == null){
-            throw new DataAccessException("Can not join game. Game does not exist.");
+            throw new ResponseException(400, "Error: bad request");
         }
         var username = dataAccessObject.getAuthDataByAuthToken(authToken).username();
         return dataAccessObject.addObserverToGame(game, username);

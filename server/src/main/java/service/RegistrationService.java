@@ -1,23 +1,32 @@
 package service;
 
+import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess;
+import exception.ResponseException;
 import model.AuthData;
 public class RegistrationService {
-    private final MemoryDataAccess dataAccessObject;
-    public RegistrationService(MemoryDataAccess data){
+    private final DataAccess dataAccessObject;
+    public RegistrationService(DataAccess data){
         dataAccessObject = data;
     }
 
-    public AuthData register(String username, String password, String email) throws DataAccessException{
+    public AuthData register(String username, String password, String email) throws ResponseException {
         AuthData authToken;
+        if(username == null || username == ""){
+            throw new ResponseException(400, "Error: bad request");
+        }
         if(dataAccessObject.getUser(username) == null){
-            dataAccessObject.createUser(username, password, email);
+            try {
+                dataAccessObject.createUser(username, password, email);
+            }
+            catch (DataAccessException e){
+                throw new ResponseException(400, "Error: bad request");
+            }
             dataAccessObject.generateAuthToken(username);
             authToken = dataAccessObject.getAuthDataByUsername(username);
         }
-        else{
-            throw new DataAccessException("A user with that username already exists.");
+        else {
+            throw new ResponseException(403, "Error: already taken");
         }
         return authToken;
     }

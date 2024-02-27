@@ -1,9 +1,10 @@
 package service;
 
+import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
 public class AdminService {
-    private final MemoryDataAccess dataAccessObject;
-    public AdminService(MemoryDataAccess data){
+    private final DataAccess dataAccessObject;
+    public AdminService(DataAccess data){
         dataAccessObject = data;
     }
 

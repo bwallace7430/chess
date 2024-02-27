@@ -2,7 +2,7 @@ package serviceTests;
 
 import chess.ChessGame;
 import dataAccess.MemoryDataAccess;
-import dataAccess.DataAccessException;
+import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.RegistrationService;
@@ -25,13 +25,13 @@ class ServiceTests {
     }
 
     @Test
-    void deleteAll() throws DataAccessException {
+    void deleteAll() throws ResponseException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         adminService.clearDatabase();
         assertNull(data.getUser("abe_the_babe"));
     }
     @Test
-    void validRegister() throws DataAccessException {
+    void validRegister() throws ResponseException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
         assertNotSame("", userAuth.authToken());
@@ -39,15 +39,15 @@ class ServiceTests {
     }
 
     @Test
-    void invalidRegister() throws DataAccessException {
+    void invalidRegister() throws ResponseException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
-        assertThrows(DataAccessException.class, () -> {
+        assertThrows(ResponseException.class, () -> {
             registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         });
     }
     @Test
-    void validLogin() throws DataAccessException {
+    void validLogin() throws ResponseException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
 
@@ -55,15 +55,15 @@ class ServiceTests {
     }
 
     @Test
-    void invalidLogin() throws DataAccessException {
+    void invalidLogin() throws ResponseException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
-        assertThrows(DataAccessException.class, ()-> sessionService.createSession("honest_abe", "lincolnR0ck$"));
-        assertThrows(DataAccessException.class, ()->sessionService.createSession("abe_the_babe", "l!nc0lnR0ck$"));
+        assertThrows(ResponseException.class, ()-> sessionService.createSession("honest_abe", "lincolnR0ck$"));
+        assertThrows(ResponseException.class, ()->sessionService.createSession("abe_the_babe", "l!nc0lnR0ck$"));
     }
 
     @Test
-    void validLogout() throws DataAccessException{
+    void validLogout() throws ResponseException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         sessionService.endSession(userAuth.authToken());
 
@@ -72,15 +72,15 @@ class ServiceTests {
     }
 
     @Test
-    void invalidLogout() throws DataAccessException{
+    void invalidLogout() throws ResponseException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         sessionService.endSession(userAuth.authToken());
 
-        assertThrows(DataAccessException.class, ()-> sessionService.endSession(userAuth.authToken()));
+        assertThrows(ResponseException.class, ()-> sessionService.endSession(userAuth.authToken()));
     }
 
     @Test
-    void validCreateGame() throws DataAccessException{
+    void validCreateGame() throws ResponseException{
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var testGame1 = gameService.createGame(userAuth.authToken(), "Abe and the Baberahams");
         var allGames = gameService.listGames(userAuth.authToken());
@@ -91,18 +91,18 @@ class ServiceTests {
     }
 
     @Test
-    void invalidCreateGame() throws DataAccessException{
+    void invalidCreateGame() throws ResponseException{
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
 
-        assertThrows(DataAccessException.class, ()-> gameService.createGame(userAuth.authToken(), ""));
-        assertThrows(DataAccessException.class, ()-> gameService.createGame(userAuth.authToken(), null));
+        assertThrows(ResponseException.class, ()-> gameService.createGame(userAuth.authToken(), ""));
+        assertThrows(ResponseException.class, ()-> gameService.createGame(userAuth.authToken(), null));
 
         sessionService.endSession(userAuth.authToken());
-        assertThrows(DataAccessException.class, ()-> gameService.createGame(userAuth.authToken(), "Abe and the Baberahams"));
+        assertThrows(ResponseException.class, ()-> gameService.createGame(userAuth.authToken(), "Abe and the Baberahams"));
     }
 
     @Test
-    void validListGames() throws DataAccessException{
+    void validListGames() throws ResponseException{
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var testGame1 = gameService.createGame(userAuth.authToken(), "Abe and the Baberahams");
         var testGame2 = gameService.createGame(userAuth.authToken(), "Four Score and Twenty Games Ago");
@@ -114,14 +114,14 @@ class ServiceTests {
     }
 
     @Test
-    void invalidListGames() throws DataAccessException{
+    void invalidListGames() throws ResponseException{
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         sessionService.endSession(userAuth.authToken());
-        assertThrows(DataAccessException.class, ()-> gameService.listGames(userAuth.authToken()));
+        assertThrows(ResponseException.class, ()-> gameService.listGames(userAuth.authToken()));
     }
 
     @Test
-    void validJoinGame() throws DataAccessException{
+    void validJoinGame() throws ResponseException{
         var playerOneAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var game = gameService.createGame(playerOneAuth.authToken(), "Abe and the Baberahams");
         game = gameService.joinGame(playerOneAuth.authToken(), game.gameID(), ChessGame.TeamColor.BLACK);
@@ -137,18 +137,18 @@ class ServiceTests {
     }
 
     @Test
-    void invalidJoinGame() throws DataAccessException{
+    void invalidJoinGame() throws ResponseException{
         var playerOneAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         var game = gameService.createGame(playerOneAuth.authToken(), "Abe and the Baberahams");
         game = gameService.joinGame(playerOneAuth.authToken(), game.gameID(), ChessGame.TeamColor.BLACK);
         var gameID = game.gameID();
 
         var playerTwoAuth = registrationService.register("wilks_booth", "lincoln$uck$", "ilovetheaters@usa.com");
-        assertThrows(DataAccessException.class, ()->gameService.joinGame(playerTwoAuth.authToken(), gameID, ChessGame.TeamColor.BLACK));
-        assertThrows(DataAccessException.class, ()->gameService.joinGame(playerTwoAuth.authToken(), gameID+7, ChessGame.TeamColor.BLACK));
+        assertThrows(ResponseException.class, ()->gameService.joinGame(playerTwoAuth.authToken(), gameID, ChessGame.TeamColor.BLACK));
+        assertThrows(ResponseException.class, ()->gameService.joinGame(playerTwoAuth.authToken(), gameID+7, ChessGame.TeamColor.BLACK));
         gameService.joinGame(playerTwoAuth.authToken(), gameID, ChessGame.TeamColor.WHITE);
 
         var observerAuth = registrationService.register("shocked_observer", "tr@um@tized4life", "ihatetheaters@usa.com");
-        assertThrows(DataAccessException.class, ()->gameService.joinGame(observerAuth.authToken(), gameID, ChessGame.TeamColor.WHITE));
+        assertThrows(ResponseException.class, ()->gameService.joinGame(observerAuth.authToken(), gameID, ChessGame.TeamColor.WHITE));
     }
 }

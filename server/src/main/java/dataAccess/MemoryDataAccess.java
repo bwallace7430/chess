@@ -24,7 +24,10 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public void createUser(String username, String password, String email){
+    public void createUser(String username, String password, String email) throws DataAccessException{
+        if(username == null || username == "" || password == null || password == "" || email == null || email == ""){
+            throw new DataAccessException("Correct info not found.");
+        }
         var newUser = new model.UserData(username, password, email);
         allUsers.add(newUser);
     }

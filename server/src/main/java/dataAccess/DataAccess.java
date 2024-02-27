@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface DataAccess {
     UserData getUser(String username);
-    void createUser(String username, String password, String email);
+    void createUser(String username, String password, String email) throws DataAccessException;
     void generateAuthToken(String username);
     AuthData getAuthDataByUsername(String username);
     AuthData getAuthDataByAuthToken(String authToken);
