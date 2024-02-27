@@ -8,7 +8,7 @@ public class ResponseException extends Exception {
         this.errorCode = errorCode;
     }
 
-    public int ErrorCode() {
+    public int errorCode() {
         return errorCode;
     }
 }

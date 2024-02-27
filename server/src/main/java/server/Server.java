@@ -13,7 +13,6 @@ import service.SessionService;
 import spark.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class Server {
     private final RegistrationService registrationService;
@@ -61,7 +60,7 @@ public class Server {
     }
 
     private void exceptionHandler(ResponseException ex, Request request, Response response) {
-        response.status(ex.ErrorCode());
+        response.status(ex.errorCode());
         var error = new ErrorResponse(ex.getMessage());
         response.body(new Gson().toJson(error));
     }
