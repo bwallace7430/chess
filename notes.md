@@ -135,3 +135,8 @@ You want a middle ground between over-testing and under-testing. Test: can you c
 expected parameters? Does it return the expected value? Don't test independent features that will naturally be tested 
 by other features (ie register user is tested by log in user). Use the library junit (import org.junit.jupiter.things)
 for testing. Before your test write "@Test"
+## Week 9
+### Writing Tests
+When you write tests, run them with coverage to see what they cover.
+### Database
+Text fields are for large groups of text. JSON files can be blob or text. 
