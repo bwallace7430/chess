@@ -65,7 +65,7 @@ public class Server {
         response.body(new Gson().toJson(error));
     }
 
-    private Object clearDatabase(Request request, Response response) {
+    private Object clearDatabase(Request request, Response response) throws ResponseException{
         adminService.clearDatabase();
         response.status(200);
         return "";

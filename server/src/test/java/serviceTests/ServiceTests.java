@@ -3,6 +3,7 @@ package serviceTests;
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
+import dataAccess.MySQLDataAccess;
 import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,14 +15,18 @@ import service.GameService;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceTests {
-    MemoryDataAccess data = new MemoryDataAccess();
+//    MemoryDataAccess data = new MemoryDataAccess();
+    MySQLDataAccess data = new MySQLDataAccess();
     RegistrationService registrationService = new RegistrationService(data);
     AdminService adminService = new AdminService(data);
     SessionService sessionService = new SessionService(data);
     GameService gameService = new GameService(data);
 
+    ServiceTests() throws DataAccessException {
+    }
+
     @BeforeEach
-    void clearData() {
+    void clearData() throws ResponseException {
         adminService.clearDatabase();
     }
 
@@ -53,7 +58,7 @@ class ServiceTests {
         sessionService.endSession(userAuth.authToken());
         var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
 
-        assertSame(data.getAuthDataByUsername("abe_the_babe"), newAuth);
+        assertEquals(data.getAuthDataByUsername("abe_the_babe"), newAuth);
     }
 
     @Test
@@ -134,8 +139,8 @@ class ServiceTests {
         assertEquals(game.whiteUsername(), "wilks_booth");
 
         var observerAuth = registrationService.register("shocked_observer", "tr@um@tized4life", "ihatetheaters@usa.com");
-        game = gameService.joinGame(observerAuth.authToken(), game.gameID());
-        assertTrue(game.observers().contains("shocked_observer"));
+        var newGame = gameService.joinGame(observerAuth.authToken(), game.gameID());
+        assertEquals(game, newGame);
     }
 
     @Test

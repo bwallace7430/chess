@@ -1,16 +1,18 @@
 package dataAccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
-import org.springframework.security.core.userdetails.User;
 
 import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
+
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -46,6 +48,16 @@ public class MySQLDataAccess implements DataAccess {
         var username = rs.getString("username");
         var authToken = rs.getString("authToken");
         return new AuthData(username, authToken);
+    }
+
+    public GameData readGame(ResultSet rs) throws SQLException{
+        var gameID = rs.getInt("gameID");
+        var whiteUsername = rs.getString("whiteUsername");
+        var blackUsername = rs.getString("blackUsername");
+        var gameName = rs.getString("gameName");
+        var gameJson = rs.getString("game");
+        var game = new Gson().fromJson(gameJson, ChessGame.class);
+        return new GameData(gameID, whiteUsername, blackUsername, gameName, game);
     }
 
     public void createUser(String username, String password, String email) throws ResponseException, DataAccessException {
@@ -98,36 +110,90 @@ public class MySQLDataAccess implements DataAccess {
         return null;
     }
 
-    public void removeAuthData(String authToken){
+    public void removeAuthData(String authToken) throws DataAccessException{
+        var statement = "DELETE FROM Auth WHERE authToken=?";
+        runSQL(statement, authToken);
     }
 
-    public GameData createGame(String gameName){
+    public GameData createGame(String gameName) throws DataAccessException{
+        var statement = "INSERT INTO Game (gameName, game) VALUES (?, ?)";
+        var game = new ChessGame();
+        var  gameID = runSQL(statement, gameName, game);
+        return new GameData(gameID, null, null, gameName, game);
+    }
+
+    public GameData getGameByID(int gameID) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM Game WHERE gameID=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readGame(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
-    public GameData getGameByID(int gameID){
-        return null;
-    }
-
-    public GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException{
+    public GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException, ResponseException{
+        switch (playerColor){
+            case WHITE -> {
+                if (game.whiteUsername() != null){
+                    throw new ResponseException(403, "Error: already taken");
+                }
+                else{
+                    var statement = "INSERT INTO Game (whiteUsername) VALUES (?) WHERE gameID=?";
+                    runSQL(statement, username, game.gameID());
+                }
+            }
+            case BLACK -> {
+                if (game.blackUsername() != null){
+                    throw new ResponseException(403, "Error: already taken");
+                }
+                else{
+                    var statement = "INSERT INTO Game (blackUsername) VALUES (?) WHERE gameID=?";
+                    runSQL(statement, username, game.gameID());
+                }
+            }
+        }
         return null;
     }
 
     public GameData addObserverToGame(GameData game, String username){
-        return null;
+        return game;
     }
 
-    public Collection<GameData> getAllGames(){
-        return null;
+    public Collection<GameData> getAllGames() throws ResponseException{
+        var result = new ArrayList<GameData>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT * FROM Game";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readGame(rs));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new ResponseException(500, "Error: " + e.getMessage());
+        }
+        return result;
     }
-    public void deleteGames(){
-
+    public void deleteGames() throws DataAccessException{
+        var statement = "TRUNCATE Game";
+        runSQL(statement);
     }
-    public void deleteUsers(){
-
+    public void deleteUsers() throws DataAccessException{
+        var statement = "TRUNCATE User";
+        runSQL(statement);
     }
-    public void deleteAuths(){
-
+    public void deleteAuths() throws DataAccessException{
+        var statement = "TRUNCATE Auth";
+        runSQL(statement);
     }
 
     private int runSQL(String statement, Object... params) throws DataAccessException {
@@ -167,20 +233,18 @@ public class MySQLDataAccess implements DataAccess {
               `gameName` varchar(300) NOT NULL,
               `game` text NOT NULL,
               PRIMARY KEY (`gameID`),
-              INDEX(`gameName`)
+              INDEX(gameName)
               )
-              DEFAULT CHARSET=utf8mb4
               """,
             """
               CREATE TABLE IF NOT EXISTS User(
               `userID` int NOT NULL AUTO_INCREMENT,
               `username` varchar(300),
               `email` varchar(400),
-              `password` varchar(700)
+              `password` varchar(700),
               PRIMARY KEY (`userID`),
               INDEX(`username`)
               )
-              DEFAULT CHARSET=utf8mb4
               """,
             """
               CREATE TABLE IF NOT EXISTS Auth(
@@ -188,10 +252,9 @@ public class MySQLDataAccess implements DataAccess {
               `username` varchar(300),
               `authToken` varchar(700),
               PRIMARY KEY (`authID`),
-              INDEX(`username`)
+              INDEX(`username`),
               INDEX(`authToken`)
               )
-              DEFAULT CHARSET=utf8mb4
             """
     };
     private void configureDatabase() throws DataAccessException {

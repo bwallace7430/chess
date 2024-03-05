@@ -14,13 +14,13 @@ public interface DataAccess {
     AuthData generateAuthToken(String username) throws DataAccessException;
     AuthData getAuthDataByUsername(String username) throws DataAccessException;
     AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException;
-    void removeAuthData(String authToken);
-    GameData createGame(String gameName);
-    GameData getGameByID(int gameID);
-    GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException;
+    void removeAuthData(String authToken) throws DataAccessException;
+    GameData createGame(String gameName) throws DataAccessException;
+    GameData getGameByID(int gameID) throws DataAccessException;
+    GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException, ResponseException;
     GameData addObserverToGame(GameData game, String username);
-    Collection<GameData> getAllGames();
-    void deleteGames();
-    void deleteUsers();
-    void deleteAuths();
+    Collection<GameData> getAllGames() throws ResponseException;
+    void deleteGames() throws DataAccessException;
+    void deleteUsers() throws DataAccessException;
+    void deleteAuths() throws DataAccessException;
 }

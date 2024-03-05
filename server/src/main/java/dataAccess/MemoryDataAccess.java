@@ -10,15 +10,13 @@ import model.UserData;
 import model.AuthData;
 import model.GameData;
 
-import javax.xml.crypto.Data;
-
 public class MemoryDataAccess implements DataAccess{
     private final Collection<UserData>allUsers = new ArrayList<>();
     private final Collection<AuthData> allAuthData = new ArrayList<>();
     private final Collection<GameData>allGames = new ArrayList<>();
     private int gameID = 0;
 
-    public UserData getUser(String username) throws DataAccessException{
+    public UserData getUser(String username) {
         for (UserData user : allUsers){
             if(user.username().equals(username)){
                 return user;
@@ -27,7 +25,7 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public void createUser(String username, String password, String email) throws ResponseException, DataAccessException {
+    public void createUser(String username, String password, String email) throws ResponseException {
         if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
             throw new ResponseException(400, "Error: bad request");
         }
@@ -35,14 +33,14 @@ public class MemoryDataAccess implements DataAccess{
         allUsers.add(newUser);
     }
 
-    public AuthData generateAuthToken(String username) throws DataAccessException{
+    public AuthData generateAuthToken(String username) {
         var authToken = UUID.randomUUID().toString();
         var newAuthTokenObject = new AuthData(username, authToken);
         allAuthData.add(newAuthTokenObject);
         return newAuthTokenObject;
     }
 
-    public AuthData getAuthDataByUsername(String username) throws DataAccessException{
+    public AuthData getAuthDataByUsername(String username) {
         for (AuthData authData : allAuthData){
             if(authData.username().equals(username)){
                 return authData;
@@ -51,7 +49,7 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException{
+    public AuthData getAuthDataByAuthToken(String authToken) {
         for (AuthData authData : allAuthData){
             if(authData.authToken().equals(authToken)){
                 return authData;
@@ -66,8 +64,7 @@ public class MemoryDataAccess implements DataAccess{
 
     public GameData createGame(String gameName){
         gameID += 1;
-        var observers = new ArrayList<String>();
-        var newGame = new GameData(gameID, null, null, gameName, new ChessGame(), observers);
+        var newGame = new GameData(gameID, null, null, gameName, new ChessGame());
         allGames.add(newGame);
         return newGame;
     }
@@ -88,7 +85,7 @@ public class MemoryDataAccess implements DataAccess{
                     throw new DataAccessException("Can not join as white. Spot already taken.");
                 }
                 else{
-                    var editedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game(), game.observers());
+                    var editedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
                     allGames.remove(game);
                     allGames.add(editedGame);
                     return editedGame;
@@ -99,7 +96,7 @@ public class MemoryDataAccess implements DataAccess{
                 throw new DataAccessException("Can not join as black. Spot already taken.");
                 }
                 else{
-                    var editedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game(), game.observers());
+                    var editedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
                     allGames.remove(game);
                     allGames.add(editedGame);
                     return editedGame;
@@ -110,7 +107,6 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     public GameData addObserverToGame(GameData game, String username){
-        game.addObserver(username);
         return game;
     }
 
