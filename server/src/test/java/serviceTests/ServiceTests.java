@@ -1,6 +1,7 @@
 package serviceTests;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess;
 import exception.ResponseException;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +26,7 @@ class ServiceTests {
     }
 
     @Test
-    void deleteAll() throws ResponseException {
+    void deleteAll() throws ResponseException, DataAccessException {
         registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         adminService.clearDatabase();
         assertNull(data.getUser("abe_the_babe"));

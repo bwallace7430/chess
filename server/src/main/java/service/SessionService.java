@@ -1,6 +1,7 @@
 package service;
 
 import dataAccess.DataAccess;
+import dataAccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 public class SessionService {
@@ -10,17 +11,20 @@ public class SessionService {
     }
 
     public AuthData createSession(String username, String password) throws ResponseException {
-        var user = dataAccessObject.getUser(username);
-        if(user == null){
-            throw new ResponseException(401, "Error: unauthorized");
-        }
-        else{
-            if(!user.password().equals(password)){
+        try {
+            var user = dataAccessObject.getUser(username);
+            if (user == null) {
                 throw new ResponseException(401, "Error: unauthorized");
+            } else {
+                if (!user.password().equals(password)) {
+                    throw new ResponseException(401, "Error: unauthorized");
+                } else {
+                    return dataAccessObject.generateAuthToken(username);
+                }
             }
-            else{
-                return dataAccessObject.generateAuthToken(username);
-            }
+        }
+        catch (DataAccessException e){
+            throw new ResponseException(500, "Error: " + e.getMessage());
         }
     }
 

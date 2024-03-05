@@ -1,28 +1,61 @@
 package dataAccess;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.springframework.security.core.userdetails.User;
 
 import java.sql.*;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
 import static java.sql.Types.NULL;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.UUID;
 
 public class MySQLDataAccess implements DataAccess {
-    public UserData getUser(String username){
+    public MySQLDataAccess() throws DataAccessException{
+        configureDatabase();
+    }
+    public UserData getUser(String username) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, email, password FROM User WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readUser(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
-    public void createUser(String username, String password, String email) throws DataAccessException{
+    public UserData readUser(ResultSet rs) throws SQLException{
+        var username = rs.getString("username");
+        var email = rs.getString("email");
+        var password = rs.getString("password");
+        return new UserData(username, password, email);
     }
 
-    public AuthData generateAuthToken(String username){
-        return null;
+    public void createUser(String username, String password, String email) throws ResponseException, DataAccessException {
+        if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
+            throw new ResponseException(400, "Error: bad request");
+        }
+        var statement = "INSERT INTO User (username, password, email) VALUES (?, ?, ?)";
+        runSQL(statement, username, password, email);
+    }
+
+    public AuthData generateAuthToken(String username) throws DataAccessException{
+        var authToken = UUID.randomUUID().toString();
+        var statement = "INSERT INTO Auth (username, authToken) VALUES (?, ?)";
+        runSQL(statement, username, authToken);
+
+        return new AuthData(username, authToken);
     }
 
     public AuthData getAuthDataByUsername(String username){
@@ -65,14 +98,18 @@ public class MySQLDataAccess implements DataAccess {
 
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+    private int runSQL(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
                     var param = params[i];
-                    if (param instanceof String p) ps.setString(i + 1, p);
-                    else if (param instanceof Integer p) ps.setInt(i + 1, p);
-                    else if (param == null) ps.setNull(i + 1, NULL);
+                    switch (param) {
+                        case String p -> ps.setString(i + 1, p);
+                        case Integer p -> ps.setInt(i + 1, p);
+                        case null -> ps.setNull(i + 1, NULL);
+                        default -> {
+                        }
+                    }
                 }
                 ps.executeUpdate();
 

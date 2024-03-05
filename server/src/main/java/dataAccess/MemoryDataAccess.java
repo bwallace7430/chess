@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 import chess.ChessGame;
+import exception.ResponseException;
 import model.UserData;
 import model.AuthData;
 import model.GameData;
@@ -15,7 +16,7 @@ public class MemoryDataAccess implements DataAccess{
     private final Collection<GameData>allGames = new ArrayList<>();
     private int gameID = 0;
 
-    public UserData getUser(String username){
+    public UserData getUser(String username) throws DataAccessException{
         for (UserData user : allUsers){
             if(user.username().equals(username)){
                 return user;
@@ -24,15 +25,15 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public void createUser(String username, String password, String email) throws DataAccessException{
+    public void createUser(String username, String password, String email) throws ResponseException, DataAccessException {
         if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
-            throw new DataAccessException("Correct info not found.");
+            throw new ResponseException(400, "Error: bad request");
         }
         var newUser = new model.UserData(username, password, email);
         allUsers.add(newUser);
     }
 
-    public AuthData generateAuthToken(String username){
+    public AuthData generateAuthToken(String username) throws DataAccessException{
         var authToken = UUID.randomUUID().toString();
         var newAuthTokenObject = new AuthData(username, authToken);
         allAuthData.add(newAuthTokenObject);

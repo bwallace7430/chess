@@ -15,19 +15,19 @@ public class RegistrationService {
         if(username == null || username.isEmpty()){
             throw new ResponseException(400, "Error: bad request");
         }
-        if(dataAccessObject.getUser(username) == null){
-            try {
+        try {
+            if (dataAccessObject.getUser(username) == null) {
                 dataAccessObject.createUser(username, password, email);
             }
-            catch (DataAccessException e){
-                throw new ResponseException(400, "Error: bad request");
+            else {
+                throw new ResponseException(403, "Error: already taken");
             }
             dataAccessObject.generateAuthToken(username);
             authData = dataAccessObject.getAuthDataByUsername(username);
+            return authData;
         }
-        else {
-            throw new ResponseException(403, "Error: already taken");
+        catch (DataAccessException e){
+            throw new ResponseException(500, "Error: " + e.getMessage());
         }
-        return authData;
     }
 }
