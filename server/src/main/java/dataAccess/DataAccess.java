@@ -12,8 +12,8 @@ public interface DataAccess {
     UserData getUser(String username) throws DataAccessException;
     void createUser(String username, String password, String email) throws ResponseException, DataAccessException;
     AuthData generateAuthToken(String username) throws DataAccessException;
-    AuthData getAuthDataByUsername(String username);
-    AuthData getAuthDataByAuthToken(String authToken);
+    AuthData getAuthDataByUsername(String username) throws DataAccessException;
+    AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException;
     void removeAuthData(String authToken);
     GameData createGame(String gameName);
     GameData getGameByID(int gameID);

@@ -29,9 +29,14 @@ public class SessionService {
     }
 
     public void endSession(String authToken) throws ResponseException{
-        if(dataAccessObject.getAuthDataByAuthToken(authToken) == null){
-            throw new ResponseException(401, "Error: unauthorized");
+        try {
+            if (dataAccessObject.getAuthDataByAuthToken(authToken) == null) {
+                throw new ResponseException(401, "Error: unauthorized");
+            }
+            dataAccessObject.removeAuthData(authToken);
         }
-        dataAccessObject.removeAuthData(authToken);
+        catch (DataAccessException e){
+            throw new ResponseException(500, "Error: " + e.getMessage());
+        }
     }
 }

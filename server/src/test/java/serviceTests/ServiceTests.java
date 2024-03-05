@@ -48,7 +48,7 @@ class ServiceTests {
         });
     }
     @Test
-    void validLogin() throws ResponseException {
+    void validLogin() throws ResponseException, DataAccessException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         sessionService.endSession(userAuth.authToken());
         var newAuth = sessionService.createSession("abe_the_babe", "lincolnR0ck$");
@@ -65,7 +65,7 @@ class ServiceTests {
     }
 
     @Test
-    void validLogout() throws ResponseException {
+    void validLogout() throws ResponseException, DataAccessException {
         var userAuth = registrationService.register("abe_the_babe", "lincolnR0ck$", "alincoln@usa.com");
         sessionService.endSession(userAuth.authToken());
 

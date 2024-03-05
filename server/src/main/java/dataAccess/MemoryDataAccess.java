@@ -10,6 +10,8 @@ import model.UserData;
 import model.AuthData;
 import model.GameData;
 
+import javax.xml.crypto.Data;
+
 public class MemoryDataAccess implements DataAccess{
     private final Collection<UserData>allUsers = new ArrayList<>();
     private final Collection<AuthData> allAuthData = new ArrayList<>();
@@ -40,7 +42,7 @@ public class MemoryDataAccess implements DataAccess{
         return newAuthTokenObject;
     }
 
-    public AuthData getAuthDataByUsername(String username){
+    public AuthData getAuthDataByUsername(String username) throws DataAccessException{
         for (AuthData authData : allAuthData){
             if(authData.username().equals(username)){
                 return authData;
@@ -49,7 +51,7 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public AuthData getAuthDataByAuthToken(String authToken){
+    public AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException{
         for (AuthData authData : allAuthData){
             if(authData.authToken().equals(authToken)){
                 return authData;

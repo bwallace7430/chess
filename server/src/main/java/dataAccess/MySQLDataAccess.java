@@ -42,6 +42,12 @@ public class MySQLDataAccess implements DataAccess {
         return new UserData(username, password, email);
     }
 
+    public AuthData readAuth(ResultSet rs) throws SQLException{
+        var username = rs.getString("username");
+        var authToken = rs.getString("authToken");
+        return new AuthData(username, authToken);
+    }
+
     public void createUser(String username, String password, String email) throws ResponseException, DataAccessException {
         if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
             throw new ResponseException(400, "Error: bad request");
@@ -58,11 +64,37 @@ public class MySQLDataAccess implements DataAccess {
         return new AuthData(username, authToken);
     }
 
-    public AuthData getAuthDataByUsername(String username){
+    public AuthData getAuthDataByUsername(String username) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, authToken FROM Auth WHERE username=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, username);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
-    public AuthData getAuthDataByAuthToken(String authToken){
+    public AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException{
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, authToken FROM Auth WHERE authToken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readAuth(rs);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
         return null;
     }
 
