@@ -139,4 +139,8 @@ for testing. Before your test write "@Test"
 ### Writing Tests
 When you write tests, run them with coverage to see what they cover.
 ### Database
-Text fields are for large groups of text. JSON files can be blob or text. 
+Text fields are for large groups of text. JSON files can be blob or text.
+## Week 10
+### MySQL Phase 4
+DO NOT PUT YOUR CREDENTIALS ON GITHUB. USE THE GITIGNORE FILE. Things left to do: gitignore file, password hashing, 
+chess game jsonifying and unjsonifying, database tests. 
