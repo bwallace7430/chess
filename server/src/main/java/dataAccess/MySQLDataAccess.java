@@ -118,7 +118,8 @@ public class MySQLDataAccess implements DataAccess {
     public GameData createGame(String gameName) throws DataAccessException{
         var statement = "INSERT INTO Game (gameName, game) VALUES (?, ?)";
         var game = new ChessGame();
-        var  gameID = runSQL(statement, gameName, game);
+        var gameJson = new Gson().toJson(game);
+        var  gameID = runSQL(statement, gameName, gameJson);
         return new GameData(gameID, null, null, gameName, game);
     }
 
@@ -146,8 +147,9 @@ public class MySQLDataAccess implements DataAccess {
                     throw new ResponseException(403, "Error: already taken");
                 }
                 else{
-                    var statement = "INSERT INTO Game (whiteUsername) VALUES (?) WHERE gameID=?";
+                    var statement = "UPDATE Game SET whiteUsername = ? WHERE gameID = ?";
                     runSQL(statement, username, game.gameID());
+                    return getGameByID(game.gameID());
                 }
             }
             case BLACK -> {
@@ -155,8 +157,9 @@ public class MySQLDataAccess implements DataAccess {
                     throw new ResponseException(403, "Error: already taken");
                 }
                 else{
-                    var statement = "INSERT INTO Game (blackUsername) VALUES (?) WHERE gameID=?";
+                    var statement = "UPDATE Game SET blackUsername = ? WHERE gameID = ?";
                     runSQL(statement, username, game.gameID());
+                    return getGameByID(game.gameID());
                 }
             }
         }

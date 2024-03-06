@@ -16,6 +16,8 @@ public class ChessGame {
     private ChessBoard currBoard;
 
     public ChessGame() {
+        teamTurn = TeamColor.BLACK;
+        currBoard = new ChessBoard();
     }
 
     /**
