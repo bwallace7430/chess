@@ -94,7 +94,24 @@ class DataAccessTests {
         data.generateAuthToken(username);
         assertNull(data.getAuthDataByUsername("username2"));
     }
-//    AuthData getAuthDataByUsername(String username) throws DataAccessException;
+
+    @Test
+    void validGetAuthDataByAuthToken() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        var authData = data.generateAuthToken(username);
+        var token = authData.authToken();
+        var testData = data.getAuthDataByAuthToken(token);
+        assertEquals(token, testData.authToken());
+        assertEquals(testData, data.getAuthDataByUsername(username));
+    }
+
+    @Test
+    void invalidGetAuthDataByAuthToken() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        data.generateAuthToken(username);
+        assertNull(data.getAuthDataByAuthToken("fakeAuth23"));
+    }
+
 //    AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException;
 //    void removeAuthData(String authToken) throws DataAccessException;
 //    GameData createGame(String gameName) throws DataAccessException;
