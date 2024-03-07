@@ -9,6 +9,7 @@ import exception.ResponseException;
 import model.UserData;
 import model.AuthData;
 import model.GameData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class MemoryDataAccess implements DataAccess{
     private final Collection<UserData>allUsers = new ArrayList<>();
@@ -29,7 +30,9 @@ public class MemoryDataAccess implements DataAccess{
         if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
             throw new ResponseException(400, "Error: bad request");
         }
-        var newUser = new model.UserData(username, password, email);
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
+        var newUser = new model.UserData(username, hashedPassword, email);
         allUsers.add(newUser);
     }
 

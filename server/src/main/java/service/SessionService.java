@@ -4,6 +4,8 @@ import dataAccess.DataAccess;
 import dataAccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 public class SessionService {
     private final DataAccess dataAccessObject;
     public SessionService(DataAccess data){
@@ -16,7 +18,8 @@ public class SessionService {
             if (user == null) {
                 throw new ResponseException(401, "Error: unauthorized");
             } else {
-                if (!user.password().equals(password)) {
+                BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+                if (!encoder.matches(password, user.password())) {
                     throw new ResponseException(401, "Error: unauthorized");
                 } else {
                     return dataAccessObject.generateAuthToken(username);

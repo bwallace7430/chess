@@ -6,6 +6,7 @@ import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.sql.*;
 
@@ -40,8 +41,8 @@ public class MySQLDataAccess implements DataAccess {
     public UserData readUser(ResultSet rs) throws SQLException{
         var username = rs.getString("username");
         var email = rs.getString("email");
-        var password = rs.getString("password");
-        return new UserData(username, password, email);
+        var hashedPassword = rs.getString("password");
+        return new UserData(username, hashedPassword, email);
     }
 
     public AuthData readAuth(ResultSet rs) throws SQLException{
@@ -64,8 +65,10 @@ public class MySQLDataAccess implements DataAccess {
         if(username == null || username.isEmpty() || password == null || password.isEmpty() || email == null || email.isEmpty()){
             throw new ResponseException(400, "Error: bad request");
         }
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String hashedPassword = encoder.encode(password);
         var statement = "INSERT INTO User (username, password, email) VALUES (?, ?, ?)";
-        runSQL(statement, username, password, email);
+        runSQL(statement, username, hashedPassword, email);
     }
 
     public AuthData generateAuthToken(String username) throws DataAccessException{
