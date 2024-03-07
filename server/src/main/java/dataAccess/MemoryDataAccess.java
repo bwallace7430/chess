@@ -81,11 +81,11 @@ public class MemoryDataAccess implements DataAccess{
         return null;
     }
 
-    public GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException{
+    public GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws ResponseException{
         switch (playerColor){
             case WHITE -> {
                 if (game.whiteUsername() != null){
-                    throw new DataAccessException("Can not join as white. Spot already taken.");
+                    throw new ResponseException(403, "Error: already taken");
                 }
                 else{
                     var editedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
@@ -96,7 +96,7 @@ public class MemoryDataAccess implements DataAccess{
             }
             case BLACK -> {
                 if (game.blackUsername() != null){
-                throw new DataAccessException("Can not join as black. Spot already taken.");
+                throw new ResponseException(403, "Error: already taken");
                 }
                 else{
                     var editedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
