@@ -157,7 +157,38 @@ class DataAccessTests {
         var gameData = data.createGame(gameName);
         assertNull(data.getGameByID(75));
     }
-//    GameData getGameByID(int gameID) throws DataAccessException;
+
+    @Test
+    void validAddPlayerToGame() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        var gameData = data.createGame(gameName);
+        data.createUser("username2", "password", "email");
+
+        data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.BLACK);
+        var retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals(username, retrievedGame.blackUsername());
+        data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.WHITE);
+        retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals(username, retrievedGame.whiteUsername());
+
+        gameData = data.createGame(gameName);
+        data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.BLACK);
+        retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals(username, retrievedGame.blackUsername());
+        data.addPlayerToGame(data.getGameByID(gameData.gameID()), "username2", ChessGame.TeamColor.WHITE);
+        retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals("username2", retrievedGame.whiteUsername());
+    }
+
+    @Test
+    void invalidAddPlayerToGame() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        var gameData = data.createGame(gameName);
+        data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.BLACK);
+        var retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals(username, retrievedGame.blackUsername());
+        assertThrows(ResponseException.class, ()->data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.BLACK));
+    }
 //    GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException, ResponseException;
 //    GameData addObserverToGame(GameData game, String username);
 //    Collection<GameData> getAllGames() throws ResponseException;
