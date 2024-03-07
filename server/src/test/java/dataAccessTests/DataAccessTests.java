@@ -20,6 +20,7 @@ class DataAccessTests {
     String username = "abe_the_babe";
     String password = "lincolnR0ck$";
     String email = "alincoln@usa.com";
+    String gameName = "Abe and the Baberahams";
     DataAccessTests() throws DataAccessException {
     }
 
@@ -112,9 +113,50 @@ class DataAccessTests {
         assertNull(data.getAuthDataByAuthToken("fakeAuth23"));
     }
 
-//    AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException;
-//    void removeAuthData(String authToken) throws DataAccessException;
-//    GameData createGame(String gameName) throws DataAccessException;
+    @Test
+    void validRemoveAuthData() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        var authData = data.generateAuthToken(username);
+        data.removeAuthData(authData.authToken());
+        assertNull(data.getAuthDataByAuthToken(authData.authToken()));
+    }
+
+    @Test
+    void invalidRemoveAuthData() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        var authData = data.generateAuthToken(username);
+        assertEquals(authData, data.getAuthDataByUsername(username));
+    }
+
+    @Test
+    void validCreateGame() throws ResponseException, DataAccessException {
+        var gameOne = data.createGame(gameName);
+        var retrievedGame = data.getGameByID(gameOne.gameID());
+        assertEquals(retrievedGame.gameName(), gameName);
+
+        var gameTwo = data.createGame(gameName);
+        assertNotEquals(data.getGameByID(gameOne.gameID()), data.getGameByID(gameTwo.gameID()));
+    }
+
+    @Test
+    void invalidCreateGame(){
+        assertThrows(DataAccessException.class, ()->data.createGame(null));
+    }
+
+    @Test
+    void validGetGameByID() throws DataAccessException {
+        var gameData = data.createGame(gameName);
+        var retrievedGame = data.getGameByID(gameData.gameID());
+        assertEquals(retrievedGame.gameName(), gameData.gameName());
+        assertEquals(retrievedGame.blackUsername(), gameData.blackUsername());
+        assertEquals(retrievedGame.whiteUsername(), gameData.whiteUsername());
+    }
+
+    @Test
+    void invalidGetGameByID() throws DataAccessException {
+        var gameData = data.createGame(gameName);
+        assertNull(data.getGameByID(75));
+    }
 //    GameData getGameByID(int gameID) throws DataAccessException;
 //    GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException, ResponseException;
 //    GameData addObserverToGame(GameData game, String username);
