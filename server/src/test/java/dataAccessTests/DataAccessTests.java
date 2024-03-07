@@ -59,6 +59,12 @@ class DataAccessTests {
         assertTrue(encoder.matches(password, retrievedUser.password()));
     }
 
+    @Test
+    void invalidGetUser() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        assertNull(data.getUser("username2"));
+    }
+
 //    UserData getUser(String username) throws DataAccessException;
 //    AuthData generateAuthToken(String username) throws DataAccessException;
 //    AuthData getAuthDataByUsername(String username) throws DataAccessException;
