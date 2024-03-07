@@ -65,7 +65,21 @@ class DataAccessTests {
         assertNull(data.getUser("username2"));
     }
 
-//    UserData getUser(String username) throws DataAccessException;
+    @Test
+    void validGenerateAuthToken() throws DataAccessException, ResponseException {
+        data.createUser(username, password, email);
+        var authData = data.generateAuthToken(username);
+        assertEquals(authData.username(), username);
+        assertEquals(authData.authToken(), data.getAuthDataByUsername(username).authToken());
+    }
+
+    @Test
+    void invalidGenerateAuthToken() throws ResponseException, DataAccessException {
+        data.createUser(username, password, email);
+        assertThrows(DataAccessException.class, ()->data.generateAuthToken(null));
+    }
+
+
 //    AuthData generateAuthToken(String username) throws DataAccessException;
 //    AuthData getAuthDataByUsername(String username) throws DataAccessException;
 //    AuthData getAuthDataByAuthToken(String authToken) throws DataAccessException;

@@ -75,7 +75,6 @@ public class MySQLDataAccess implements DataAccess {
         var authToken = UUID.randomUUID().toString();
         var statement = "INSERT INTO Auth (username, authToken) VALUES (?, ?)";
         runSQL(statement, username, authToken);
-
         return new AuthData(username, authToken);
     }
 
@@ -245,9 +244,9 @@ public class MySQLDataAccess implements DataAccess {
             """
               CREATE TABLE IF NOT EXISTS User(
               `userID` int NOT NULL AUTO_INCREMENT,
-              `username` varchar(300),
-              `email` varchar(400),
-              `password` varchar(700),
+              `username` varchar(300) NOT NULL,
+              `email` varchar(400) NOT NULL,
+              `password` varchar(700) NOT NULL,
               PRIMARY KEY (`userID`),
               INDEX(`username`)
               )
@@ -255,8 +254,8 @@ public class MySQLDataAccess implements DataAccess {
             """
               CREATE TABLE IF NOT EXISTS Auth(
               `authID` int NOT NULL AUTO_INCREMENT,
-              `username` varchar(300),
-              `authToken` varchar(700),
+              `username` varchar(256) NOT NULL,
+              `authToken` varchar(256) NOT NULL,
               PRIMARY KEY (`authID`),
               INDEX(`username`),
               INDEX(`authToken`)
