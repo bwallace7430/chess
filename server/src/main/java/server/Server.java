@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.DataAccess;
 import dataAccess.MemoryDataAccess;
+import dataAccess.MySQLDataAccess;
 import exception.ResponseException;
 import model.GameData;
 import model.UserData;
@@ -28,7 +29,13 @@ public class Server {
     }
 
     public Server() {
-        var dataAccess = new MemoryDataAccess();
+        DataAccess dataAccess;
+        try {
+            dataAccess = new MySQLDataAccess();
+        }
+        catch (Exception ignored) {
+            dataAccess = new MemoryDataAccess();
+        }
         registrationService = new RegistrationService(dataAccess);
         sessionService = new SessionService(dataAccess);
         gameService = new GameService(dataAccess);

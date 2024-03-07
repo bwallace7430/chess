@@ -15,8 +15,8 @@ import service.GameService;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceTests {
-    MemoryDataAccess data = new MemoryDataAccess();
-    //MySQLDataAccess data = new MySQLDataAccess();
+    //MemoryDataAccess data = new MemoryDataAccess();
+    MySQLDataAccess data = new MySQLDataAccess();
     RegistrationService registrationService = new RegistrationService(data);
     AdminService adminService = new AdminService(data);
     SessionService sessionService = new SessionService(data);
