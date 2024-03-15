@@ -144,3 +144,7 @@ Text fields are for large groups of text. JSON files can be blob or text.
 ### MySQL Phase 4
 DO NOT PUT YOUR CREDENTIALS ON GITHUB. USE THE GITIGNORE FILE. Things left to do: gitignore file, password hashing, 
 chess game jsonifying and unjsonifying, database tests. 
+## Week 11
+### Phase 5 - Clients
+Logging: persistent, immutable, aggregated, accessible, performant. Debugging: code review, reproduce, logging, 
+debugger, verify. ALWAYS test-driven development. Look up how to do logging in intellij.
