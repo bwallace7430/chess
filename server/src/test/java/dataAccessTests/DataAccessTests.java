@@ -189,7 +189,8 @@ class DataAccessTests {
         assertEquals(username, retrievedGame.blackUsername());
         assertThrows(ResponseException.class, ()->data.addPlayerToGame(data.getGameByID(gameData.gameID()), username, ChessGame.TeamColor.BLACK));
     }
-//    GameData addPlayerToGame(GameData game, String username, ChessGame.TeamColor playerColor) throws DataAccessException, ResponseException;
+
+//    IMPLEMENT IN THE FUTURE:
 //    GameData addObserverToGame(GameData game, String username);
 //    Collection<GameData> getAllGames() throws ResponseException;
 //    void deleteGames() throws DataAccessException;
