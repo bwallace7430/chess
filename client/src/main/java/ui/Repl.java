@@ -1,17 +1,18 @@
 package ui;
 import java.util.Scanner;
 import static ui.EscapeSequences.*;
+import client.Client;
+
 
 public class Repl {
-    //private final PetClient client;
+    private final Client client;
 
     public Repl(String serverUrl) {
-        //client = new PetClient(serverUrl, this);
+        client = new Client(serverUrl);
     }
 
     public void run() {
         System.out.println("\uD83D\uDC36 Welcome to chess! Type help to begin.");
-        //System.out.print(client.help());
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -20,7 +21,7 @@ public class Repl {
             String line = scanner.nextLine();
 
             try {
-                //result = client.eval(line);
+                result = client.eval(line);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();

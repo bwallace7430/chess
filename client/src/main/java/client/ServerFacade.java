@@ -1,3 +1,5 @@
+package client;
+
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -26,7 +28,7 @@ public class ServerFacade {
         http.addRequestProperty("Accept", "application/json");
     }
 
-    private static void sendRequest(String url, String method, Map<String, String> body, String authToken) throws Exception {
+    private static Map sendRequest(String url, String method, Map<String, String> body, String authToken) throws Exception {
         URI uri = new URI(url);
         HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
 
@@ -42,47 +44,48 @@ public class ServerFacade {
 
         try (InputStream respBody = http.getInputStream()) {
             InputStreamReader inputStreamReader = new InputStreamReader(respBody);
-            System.out.println(new Gson().fromJson(inputStreamReader, Map.class));
+            return (new Gson().fromJson(inputStreamReader, Map.class));
         }
     }
 
-    private static void sendRequest(String url, String method, Map<String, String> body) throws Exception{
-        sendRequest(url, method, body, null);
+    private static Map sendRequest(String url, String method, Map<String, String> body) throws Exception{
+        return sendRequest(url, method, body, null);
     }
 
-    private static void sendRequest(String url, String method) throws Exception{
-        sendRequest(url, method, null, null);
+    private static Map sendRequest(String url, String method) throws Exception{
+        return sendRequest(url, method, null, null);
     }
 
-    private static void sendRequest(String url, String method, String authToken) throws Exception{
-        sendRequest(url, method, null, authToken);
+    private static Map sendRequest(String url, String method, String authToken) throws Exception{
+        return sendRequest(url, method, null, authToken);
     }
 
-    public static String createUser(String[] args) throws Exception {
+    public static String createUser(String url, String[] args) throws Exception {
         var body = Map.of("username", args[0], "password", args[1], "email", args[2]);
-        sendRequest("http://localhost:8080/user", "POST", body);
+        var responseMap = sendRequest(url + "/user", "POST", body);
+
     }
 
-    public static void createSession(String[] args) throws Exception {
+    public static String createSession(String url, String[] args) throws Exception {
         var body = Map.of("username", args[0], "password", args[1]);
-        sendRequest("http://localhost:8080/session", "POST", body);
+        sendRequest(url + "/session", "POST", body);
     }
 
-    public static void deleteSession() throws Exception {
-        sendRequest("http://localhost:8080/session", "DELETE");
+    public static void deleteSession(String url) throws Exception {
+        sendRequest(url + "/session", "DELETE");
     }
 
-    public static void listGame(String authToken) throws Exception {
-        sendRequest("http://localhost:8080/game", "GET", authToken);
+    public static String listGame(String url, String authToken) throws Exception {
+        sendRequest(url + "/game", "GET", authToken);
     }
 
-    public static void createGame(String arg, String authToken) throws Exception {
+    public static void createGame(String url, String arg, String authToken) throws Exception {
         var body = Map.of("gameName", arg);
-        sendRequest("http://localhost:8080/post", "POST", body, authToken);
+        sendRequest(url + "/game", "POST", body, authToken);
     }
 
-    public static void joinGames(String[] args, String authToken) throws Exception {
+    public static void joinGame(String url, String[] args, String authToken) throws Exception {
         var body = Map.of("playerColor", args[0], "gameID", args[1]);
-        sendRequest("http://localhost:8080/put", "PUT", body, authToken);
+        sendRequest(url + "/game", "PUT", body, authToken);
     }
     }
