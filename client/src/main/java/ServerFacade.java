@@ -15,7 +15,6 @@ public class ServerFacade {
         }
     }
 
-
     private static void writeRequestHeader(String authToken, HttpURLConnection http) {
         if (!(authToken == null)) {
             http.setDoOutput(true);
