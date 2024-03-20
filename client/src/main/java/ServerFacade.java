@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.*;
@@ -34,6 +36,14 @@ public class ServerFacade {
         writeRequestBody(body, http);
 
         http.connect();
+
+        var statusCode = http.getResponseCode();
+        var statusMessage = http.getResponseMessage();
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            System.out.println(new Gson().fromJson(inputStreamReader, Map.class));
+        }
     }
 
     private static void sendRequest(String url, String method, Map<String, String> body) throws Exception{
@@ -48,7 +58,7 @@ public class ServerFacade {
         sendRequest(url, method, null, authToken);
     }
 
-    public static void createUser(String[] args) throws Exception {
+    public static String createUser(String[] args) throws Exception {
         var body = Map.of("username", args[0], "password", args[1], "email", args[2]);
         sendRequest("http://localhost:8080/user", "POST", body);
     }
