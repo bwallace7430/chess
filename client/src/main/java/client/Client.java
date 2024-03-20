@@ -1,5 +1,7 @@
 package client;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class Client {
     private String authToken;
@@ -44,7 +46,14 @@ public class Client {
         };
     }
     private String createUser(String[] params) throws Exception {
-        authToken = ServerFacade.createUser(serverUrl, params);
+        var responseMap = ServerFacade.createUser(serverUrl, params);
+        authToken = (String) responseMap.get("authToken");
+        userState = State.LOGGEDIN;
+        return "You are now logged in as " + params[0];
+    }
+    private String logIn(String[] params) throws Exception {
+        var responseMap = ServerFacade.createSession(serverUrl, params);
+        authToken = (String) responseMap.get("authToken");
         userState = State.LOGGEDIN;
         return "You are now logged in as " + params[0];
     }
@@ -55,24 +64,43 @@ public class Client {
                 help - view all possible commands
                 quit - exit the program""";
     }
-    private String logIn(String[] params) throws Exception {
-        authToken = ServerFacade.createSession(serverUrl, params);
-        userState = State.LOGGEDIN;
-        return "You are now logged in as " + params[0];
-    }
 
     private String loggedInHandler(String cmd, String[] params) throws Exception {
         return switch (cmd) {
-            case "help" -> displayLoggedInHelp();
             case "list" -> listGames();
             case "create" -> createGame(params);
             case "join" -> joinGame(params);
             case "observe" -> observeGame(params);
             case "logout" -> logOut();
+            case "quit" -> "quit";
+            case "help" -> displayLoggedInHelp();
             default -> displayLoggedInHelp();
         };
     }
-
+    private String listGames() throws Exception {
+        var gameListString = "";
+        var games = ServerFacade.listGame(serverUrl, authToken);
+        return "";
+    }
+    private String createGame(String[] params) throws Exception {
+        var responseMap = ServerFacade.createGame(serverUrl, params[0], authToken);
+        var gameID = responseMap.get("gameID");
+        return "Your new game has the id: " + gameID;
+    }
+    private String joinGame(String[] params) throws Exception {
+        ServerFacade.joinGame(serverUrl, params, authToken);
+        return "You are playing in game: " + params[1];
+    }
+    private String observeGame(String[] params) throws Exception {
+        ServerFacade.joinGame(serverUrl, params, authToken);
+        return "You are now watching game: " + params[0];
+    }
+    private String logOut() throws Exception {
+        ServerFacade.deleteSession(serverUrl);
+        userState = State.LOGGEDOUT;
+        authToken = null;
+        return "You are now logged out.";
+    }
     private String displayLoggedInHelp(){
         return """
                 list - view all games
@@ -82,27 +110,5 @@ public class Client {
                 logout - log out of your account
                 quit - exit the program
                 help - view all possible commands""";
-    }
-    private String listGames() throws Exception {
-        ServerFacade.listGame(serverUrl, authToken);
-        return"";
-    }
-    private String createGame(String[] params) throws Exception {
-        ServerFacade.createGame(serverUrl, params[0], authToken);
-        return "";
-    }
-    private String joinGame(String[] params) throws Exception {
-        ServerFacade.joinGame(serverUrl, params, authToken);
-        return "";
-    }
-    private String observeGame(String[] params) throws Exception {
-        ServerFacade.joinGame(serverUrl, params, authToken);
-        return "";
-    }
-    private String logOut() throws Exception {
-        ServerFacade.deleteSession(serverUrl);
-        userState = State.LOGGEDOUT;
-        authToken = null;
-        return "You are now logged out.";
     }
 }
