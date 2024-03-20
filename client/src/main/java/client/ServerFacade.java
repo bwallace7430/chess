@@ -63,7 +63,7 @@ public class ServerFacade {
     public static String createUser(String url, String[] args) throws Exception {
         var body = Map.of("username", args[0], "password", args[1], "email", args[2]);
         var responseMap = sendRequest(url + "/user", "POST", body);
-
+        return (String) responseMap.get("authToken");
     }
 
     public static String createSession(String url, String[] args) throws Exception {
