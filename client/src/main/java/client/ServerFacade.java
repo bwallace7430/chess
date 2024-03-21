@@ -48,12 +48,27 @@ public class ServerFacade {
         }
     }
 
-    private static Map sendRequest(String url, String method, Map<String, String> body) throws Exception{
-        return sendRequest(url, method, body, null);
+    private static Map sendRequest(String url, String authToken) throws Exception {
+        URI uri = new URI(url);
+        HttpURLConnection http = (HttpURLConnection) uri.toURL().openConnection();
+
+        http.setReadTimeout(5000);
+        http.setRequestMethod("GET");
+        writeRequestHeader(authToken, http);
+
+        http.connect();
+
+        var statusCode = http.getResponseCode();
+        var statusMessage = http.getResponseMessage();
+
+        try (InputStream respBody = http.getInputStream()) {
+            InputStreamReader inputStreamReader = new InputStreamReader(respBody);
+            return (new Gson().fromJson(inputStreamReader, Map.class));
+        }
     }
 
-    private static Map sendRequest(String url, String method) throws Exception{
-        return sendRequest(url, method, null, null);
+    private static Map sendRequest(String url, String method, Map<String, String> body) throws Exception{
+        return sendRequest(url, method, body, null);
     }
 
     private static Map sendRequest(String url, String method, String authToken) throws Exception{
@@ -70,13 +85,12 @@ public class ServerFacade {
         return sendRequest(url + "/session", "POST", body);
     }
 
-    public static void deleteSession(String url) throws Exception {
-        sendRequest(url + "/session", "DELETE");
+    public static void deleteSession(String url, String authToken) throws Exception {
+        sendRequest(url + "/session", "DELETE", authToken);
     }
 
-    public static Object listGame(String url, String authToken) throws Exception {
-        var responseMap = sendRequest(url + "/game", "GET", authToken);
-        return responseMap.get("games");
+    public static Map<String, List<Map<String, Object>>> listGame(String url, String authToken) throws Exception {
+        return sendRequest(url + "/game", authToken);
     }
 
     public static Map createGame(String url, String arg, String authToken) throws Exception {
@@ -84,8 +98,12 @@ public class ServerFacade {
         return sendRequest(url + "/game", "POST", body, authToken);
     }
 
-    public static void joinGame(String url, String[] args, String authToken) throws Exception {
-        var body = Map.of("playerColor", args[0], "gameID", args[1]);
+    public static void joinGame(String url, String playerColor, String gameID, String authToken) throws Exception {
+        var body = Map.of("playerColor", playerColor, "gameID", gameID);
+        sendRequest(url + "/game", "PUT", body, authToken);
+    }
+    public static void joinGame(String url, String gameID, String authToken) throws Exception {
+        var body = Map.of("gameID", gameID);
         sendRequest(url + "/game", "PUT", body, authToken);
     }
     }

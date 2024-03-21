@@ -1,7 +1,10 @@
 package client;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Dictionary;
+import java.util.HashMap;
 import java.util.Map;
+
+import static java.lang.Integer.parseInt;
 
 public class Client {
     private String authToken;
@@ -12,6 +15,7 @@ public class Client {
         INGAME
     }
     private State userState;
+    private HashMap<Integer, Double> lastViewedGames;
     public Client(String serverUrl) {
         this.serverUrl = serverUrl;
         userState = State.LOGGEDOUT;
@@ -79,8 +83,20 @@ public class Client {
     }
     private String listGames() throws Exception {
         var gameListString = "";
-        var games = ServerFacade.listGame(serverUrl, authToken);
-        return "";
+        lastViewedGames = new HashMap<>();
+        var game_index = 1;
+        var responseMap = ServerFacade.listGame(serverUrl, authToken);
+        var games = responseMap.get("games");
+        for(var game: games) {
+            game_index += 1;
+            gameListString += ("Game ID: " + String.valueOf(game_index) +
+                    "\n    Game Name: " + game.get("gameName") +
+                    "\n    Playing white: " + game.get("whiteUsername") +
+                    "\n    Playing black: " + game.get("blackUsername") + "\n");
+            double gameID = (double) game.get("gameID");
+            lastViewedGames.put(game_index, gameID);
+        }
+        return gameListString;
     }
     private String createGame(String[] params) throws Exception {
         var responseMap = ServerFacade.createGame(serverUrl, params[0], authToken);
@@ -88,15 +104,19 @@ public class Client {
         return "Your new game has the id: " + gameID;
     }
     private String joinGame(String[] params) throws Exception {
-        ServerFacade.joinGame(serverUrl, params, authToken);
-        return "You are playing in game: " + params[1];
+        var gameIndex = lastViewedGames.get(parseInt(params[1]));
+        var stringGameIndex = String.valueOf(gameIndex);
+        ServerFacade.joinGame(serverUrl, params[0], stringGameIndex, authToken);
+        return "You are playing in game as: " + params[0];
     }
     private String observeGame(String[] params) throws Exception {
-        ServerFacade.joinGame(serverUrl, params, authToken);
-        return "You are now watching game: " + params[0];
+        var gameIndex = lastViewedGames.get(parseInt(params[1]));
+        var stringGameIndex = String.valueOf(gameIndex);
+        ServerFacade.joinGame(serverUrl, params[0], authToken);
+        return "You are now viewing the game.";
     }
     private String logOut() throws Exception {
-        ServerFacade.deleteSession(serverUrl);
+        ServerFacade.deleteSession(serverUrl, authToken);
         userState = State.LOGGEDOUT;
         authToken = null;
         return "You are now logged out.";
@@ -105,7 +125,7 @@ public class Client {
         return """
                 list - view all games
                 create <NAME> - create a game
-                join <ID> [WHITE|BLACK] - join a game
+                join [WHITE|BLACK] <ID> - join a game
                 observe <ID> - watch a game
                 logout - log out of your account
                 quit - exit the program
