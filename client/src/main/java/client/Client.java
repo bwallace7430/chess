@@ -1,8 +1,12 @@
 package client;
+import chess.ChessBoard;
+import chess.ChessPiece;
+
 import java.util.Arrays;
 import java.util.HashMap;
 
 import static java.lang.Integer.parseInt;
+import static ui.BoardUI.renderBoard;
 
 public class Client {
     private String authToken;
@@ -43,7 +47,7 @@ public class Client {
             case "register" -> createUser(params);
             case "login" -> logIn(params);
             case "help" -> displayLoggedOutHelp();
-            case "quit" -> "quit";
+            case "quit" -> "Goodbye!";
             default -> displayLoggedOutHelp();
         };
     }
@@ -75,7 +79,7 @@ public class Client {
             case "join" -> joinGame(params);
             case "observe" -> observeGame(params);
             case "logout" -> logOut();
-            case "quit" -> "quit";
+            case "quit" -> "Goodbye!";
             case "help" -> displayLoggedInHelp();
             default -> displayLoggedInHelp();
         };
@@ -106,13 +110,19 @@ public class Client {
         var gameIndex = lastViewedGames.get(parseInt(params[1]));
         var stringGameIndex = String.valueOf(gameIndex);
         ServerFacade.joinGame(serverUrl, params[0], stringGameIndex, authToken);
-        return "You are playing in game as: " + params[0];
+        var board = new ChessBoard();
+        board.resetBoard();
+        renderBoard(board);
+        return "";
     }
     private String observeGame(String[] params) throws Exception {
         var gameIndex = lastViewedGames.get(parseInt(params[0]));
         var stringGameIndex = String.valueOf(gameIndex);
         ServerFacade.joinGame(serverUrl, stringGameIndex, authToken);
-        return "You are now viewing the game.";
+        var board = new ChessBoard();
+        board.resetBoard();
+        renderBoard(board);
+        return "";
     }
     private String logOut() throws Exception {
         ServerFacade.deleteSession(serverUrl, authToken);

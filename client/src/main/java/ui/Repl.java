@@ -12,11 +12,11 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println("\uD83D\uDC36 Welcome to chess! Type help to begin.");
+        System.out.println(BLACK_KNIGHT + "Welcome to chess! Type help to begin.");
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
-        while (!result.equals("quit")) {
+        while (!result.equals("Goodbye!")) {
             printPrompt();
             String line = scanner.nextLine();
 
