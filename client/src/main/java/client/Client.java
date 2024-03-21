@@ -1,8 +1,6 @@
 package client;
 import java.util.Arrays;
-import java.util.Dictionary;
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.lang.Integer.parseInt;
 
@@ -59,7 +57,8 @@ public class Client {
         var responseMap = ServerFacade.createSession(serverUrl, params);
         authToken = (String) responseMap.get("authToken");
         userState = State.LOGGEDIN;
-        return "You are now logged in as " + params[0];
+        listGames();
+        return "You are now logged in as " + params[0] + ". Type help to view your options.";
     }
     private String displayLoggedOutHelp(){
         return """
@@ -90,7 +89,7 @@ public class Client {
         for(var game: games) {
             game_index += 1;
             gameListString += ("Game ID: " + String.valueOf(game_index) +
-                    "\n    Game Name: " + game.get("gameName") +
+                    "\n    Game name: " + game.get("gameName") +
                     "\n    Playing white: " + game.get("whiteUsername") +
                     "\n    Playing black: " + game.get("blackUsername") + "\n");
             double gameID = (double) game.get("gameID");
@@ -101,7 +100,7 @@ public class Client {
     private String createGame(String[] params) throws Exception {
         var responseMap = ServerFacade.createGame(serverUrl, params[0], authToken);
         var gameID = responseMap.get("gameID");
-        return "Your new game has the id: " + gameID;
+        return "Your new game has been created.";
     }
     private String joinGame(String[] params) throws Exception {
         var gameIndex = lastViewedGames.get(parseInt(params[1]));
@@ -110,9 +109,9 @@ public class Client {
         return "You are playing in game as: " + params[0];
     }
     private String observeGame(String[] params) throws Exception {
-        var gameIndex = lastViewedGames.get(parseInt(params[1]));
+        var gameIndex = lastViewedGames.get(parseInt(params[0]));
         var stringGameIndex = String.valueOf(gameIndex);
-        ServerFacade.joinGame(serverUrl, params[0], authToken);
+        ServerFacade.joinGame(serverUrl, stringGameIndex, authToken);
         return "You are now viewing the game.";
     }
     private String logOut() throws Exception {
