@@ -67,7 +67,7 @@ public class ServerFacade {
         }
     }
 
-    private static Map sendRequest(String url, String method, Map<String, String> body) throws Exception{
+    private static Map sendRequest(String url, String method, Map<String, String> body) throws Exception {
         return sendRequest(url, method, body, null);
     }
 
@@ -87,6 +87,10 @@ public class ServerFacade {
 
     public static void deleteSession(String url, String authToken) throws Exception {
         sendRequest(url + "/session", "DELETE", authToken);
+    }
+
+    public static void deleteDatabase(String url) throws Exception {
+        sendRequest(url + "/db", "DELETE", null, null);
     }
 
     public static Map<String, List<Map<String, Object>>> listGame(String url, String authToken) throws Exception {
